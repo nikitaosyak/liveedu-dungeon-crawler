@@ -1,0 +1,66 @@
+{
+  "graphics": [
+    {
+      "alias": "graphics_ape",
+      "path": "assets/graphics/ape/descriptor.json"
+    },
+    {
+      "alias": "graphics_ghost",
+      "path": "assets/graphics/ghost/descriptor.json"
+    },
+    {
+      "alias": "graphics_hud",
+      "path": "assets/graphics/hud/descriptor.json"
+    },
+    {
+      "alias": "graphics_level",
+      "path": "assets/graphics/level/descriptor.json"
+    },
+    {
+      "alias": "graphics_player",
+      "path": "assets/graphics/player/descriptor.json"
+    }
+  ],
+  "sfx": [
+    {
+      "alias": "sfx_ape_death",
+      "path": "assets/sfx/ape_death.mp3"
+    },
+    {
+      "alias": "sfx_button",
+      "path": "assets/sfx/button.mp3"
+    },
+    {
+      "alias": "sfx_ghost_death",
+      "path": "assets/sfx/ghost_death.mp3"
+    },
+    {
+      "alias": "sfx_player_death",
+      "path": "assets/sfx/player_death.mp3"
+    },
+    {
+      "alias": "sfx_punch0",
+      "path": "assets/sfx/punch0.mp3"
+    },
+    {
+      "alias": "sfx_punch1",
+      "path": "assets/sfx/punch1.mp3"
+    },
+    {
+      "alias": "sfx_punch2",
+      "path": "assets/sfx/punch2.mp3"
+    },
+    {
+      "alias": "sfx_punch3",
+      "path": "assets/sfx/punch3.mp3"
+    },
+    {
+      "alias": "sfx_step0",
+      "path": "assets/sfx/step0.mp3"
+    },
+    {
+      "alias": "sfx_step1",
+      "path": "assets/sfx/step1.mp3"
+    }
+  ]
+}
