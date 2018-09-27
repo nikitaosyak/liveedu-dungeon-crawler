@@ -1,4 +1,23 @@
 
+export const IContainer = () => {
+    let layer = null
+    const c = new PIXI.Container()
+
+    const self = {
+        setPivot: (x, y) => { c.pivot.x = x; c.pivot.y = y; return self },
+        setLayer: v => { layer = v; return self },
+        setPosition: (x, y) => { c.x = x; c.y = y; return self },
+        add: (obj) => {
+            c.addChild(obj.visual)
+            return self
+        },
+        get layer() { return layer },
+        get visual() { return c }
+    }
+
+    return self
+}
+
 export const IVisual = (spritesheet, frame) => {
 
     let layer = null

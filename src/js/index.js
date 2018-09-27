@@ -2,6 +2,10 @@ import {Resources} from "./Resources";
 import {DivVanisher} from "./utils/DivVanisher";
 import {RENDER_LAYER, Renderer} from "./Renderer";
 import {IAnimated, IVisual} from "./Base";
+import {Isle} from "./level/Isle";
+import {LevelMap} from "./level/LevelMap";
+import {Player} from "./Player";
+import {Simulation} from "./SImulation";
 
 window.onload = () => {
 
@@ -16,17 +20,7 @@ window.onload = () => {
         const vanisher = DivVanisher()
 
         const renderer = Renderer()
-
-        console.log(resoures.raw)
-        renderer.addObject(
-            IVisual('player', 'idle_0')
-                .setLayer(RENDER_LAYER.CHARACTERS).setAnchor(0.5, 0.7).setPosition(100, 100))
-
-        renderer.addObject(
-            IAnimated('player', 'walk')
-                .setAnchor(0.5, 0.7)
-                .setPosition(200, 100)
-                .setLayer(RENDER_LAYER.CHARACTERS))
+        const simulation = Simulation(renderer)
 
         let time = Date.now()
         const gameLoop = () => {
@@ -38,8 +32,7 @@ window.onload = () => {
             vanisher.running && vanisher.update(dt)
 
             renderer.update(dt)
-
-            // renderer.addObject()
+            simulation.update(dt)
 
             requestAnimationFrame(gameLoop)
         }
@@ -51,6 +44,7 @@ window.onload = () => {
             const digest = resoures.getJSON('digest')
             digest.graphics.forEach(g => resoures.add(g.alias, g.path))
             digest.sfx.forEach(s => resoures.add(s.alias, s.path))
+            digest.level.forEach(l => resoures.add(l.alias, l.path))
 
             const domProgress = document.getElementById('progress')
             resoures.load(() => {

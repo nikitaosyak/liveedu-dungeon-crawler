@@ -35,7 +35,6 @@ export const Resources = () => {
                     currentFrameIndex += 1
                     currentFrame = `${animation}_${currentFrameIndex}.png`
                 }
-                console.log(result)
                 if (result.length > 0) {
                     return result
                 }

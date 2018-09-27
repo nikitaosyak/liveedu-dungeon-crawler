@@ -62,5 +62,19 @@
       "alias": "sfx_step1",
       "path": "assets/sfx/step1.mp3"
     }
+  ],
+  "level": [
+    {
+      "alias": "isle01",
+      "path": "assets/level/isle01"
+    },
+    {
+      "alias": "isle02",
+      "path": "assets/level/isle02"
+    },
+    {
+      "alias": "isle03",
+      "path": "assets/level/isle03"
+    }
   ]
 }

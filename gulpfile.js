@@ -79,6 +79,7 @@ gulp.task('process-assets', () => {
     process.chdir('./assets')
     const graphicsDigest = []
     const sfxDigest = []
+    const levelDigest = []
 
     const iterateFolder = path => {
         fs.readdirSync(path).forEach(fsEntry => {
@@ -93,13 +94,19 @@ gulp.task('process-assets', () => {
                         alias: relativePath.replace(/\//g, '_').replace(/\.mp3$/, ''),
                         path: `assets/${relativePath}`
                     })
-                }
+                } else
                 if (relativePath.indexOf('graphics') > -1) {
                     graphicsDigest.push({
                         alias: relativePath
                             .replace(/\//g, '_')
                             .replace(/\.png$|_descriptor\.json$/, '')
                             .replace(/graphics_/, ''),
+                        path: `assets/${relativePath}`
+                    })
+                } else
+                if (relativePath.indexOf('level') > -1) {
+                    levelDigest.push({
+                        alias: relativePath.replace(/\//g, '_').replace(/level_/, ''),
                         path: `assets/${relativePath}`
                     })
                 }
@@ -110,7 +117,7 @@ gulp.task('process-assets', () => {
     process.chdir('..')
 
     fs.writeFileSync('assets/digest.json', JSON.stringify(
-        { graphics: graphicsDigest, sfx: sfxDigest }, null, 2))
+        { graphics: graphicsDigest, sfx: sfxDigest, level: levelDigest }, null, 2))
 })
 
 //
@@ -124,5 +131,5 @@ gulp.task('connect', () => {
     })
 })
 gulp.task('reload', ['finish-deploy'], () => gulp.src('src/**/*').pipe(connect.reload()))
-gulp.task('watch', () => gulp.watch(['src/index.html', 'src/js/**/*'], ['reload']))
+gulp.task('watch', () => gulp.watch(['src/index.html', 'src/js/**/*', 'assets/**/*'], ['reload']))
 gulp.task('default', ['connect', 'finish-deploy', 'watch'])
