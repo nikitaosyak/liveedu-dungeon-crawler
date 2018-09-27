@@ -201,8 +201,8 @@
             <key type="filename">death_8.png</key>
             <key type="filename">idle_0.png</key>
             <key type="filename">idle_1.png</key>
+            <key type="filename">idle_2.png</key>
             <key type="filename">idle_3.png</key>
-            <key type="filename">idle_4.png</key>
             <key type="filename">walk_0.png</key>
             <key type="filename">walk_1.png</key>
             <key type="filename">walk_2.png</key>
@@ -245,7 +245,6 @@
             <filename>idle_0.png</filename>
             <filename>idle_1.png</filename>
             <filename>idle_3.png</filename>
-            <filename>idle_4.png</filename>
             <filename>walk_0.png</filename>
             <filename>walk_1.png</filename>
             <filename>walk_2.png</filename>
@@ -254,6 +253,7 @@
             <filename>winner_pose_1.png</filename>
             <filename>winner_pose_2.png</filename>
             <filename>winner_pose_3.png</filename>
+            <filename>idle_2.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

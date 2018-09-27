@@ -18,13 +18,31 @@ export const Resources = () => {
             })
         },
         hasResource: alias => alias in res,
-        getTexture: (alias) => {
-            if (alias in res) return res[alias].texture
-            console.warn('texture', alias, 'was replaced with default texture')
-            if (alias.indexOf('dragon') > -1) {
-                return res.dragon_fallback.texture
+        getTexture: (spritesheet, alias) => {
+            if (spritesheet in res) {
+                if (alias in res[spritesheet].textures) return res[spritesheet].textures[alias]
             }
-            return res.pixel.texture
+            console.warn('texture', alias, 'was replaced with default texture')
+            return PIXI.Texture.WHITE
+        },
+        getTextures: (spritesheet, animation) => {
+            if (spritesheet in res) {
+                const result = []
+                let currentFrameIndex = 0
+                let currentFrame = `${animation}_${currentFrameIndex}.png`
+                while (currentFrame in res[spritesheet].textures) {
+                    result.push(res[spritesheet].textures[currentFrame])
+                    currentFrameIndex += 1
+                    currentFrame = `${animation}_${currentFrameIndex}.png`
+                }
+                console.log(result)
+                if (result.length > 0) {
+                    return result
+                }
+                // if (alias in res[spritesheet].textures) return res[spritesheet].textures[alias]
+            }
+            console.warn('texture', animation, 'was replaced with default animation')
+            return [PIXI.Texture.WHITE]
         },
         getJSON: (alias) => {
             if (alias in res) return res[alias].data

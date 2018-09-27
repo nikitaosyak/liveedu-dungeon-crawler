@@ -96,7 +96,10 @@ gulp.task('process-assets', () => {
                 }
                 if (relativePath.indexOf('graphics') > -1) {
                     graphicsDigest.push({
-                        alias: relativePath.replace(/\//g, '_').replace(/\.png$|_descriptor\.json$/, ''),
+                        alias: relativePath
+                            .replace(/\//g, '_')
+                            .replace(/\.png$|_descriptor\.json$/, '')
+                            .replace(/graphics_/, ''),
                         path: `assets/${relativePath}`
                     })
                 }

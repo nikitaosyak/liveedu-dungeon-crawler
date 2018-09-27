@@ -1,23 +1,23 @@
 {
   "graphics": [
     {
-      "alias": "graphics_ape",
+      "alias": "ape",
       "path": "assets/graphics/ape/descriptor.json"
     },
     {
-      "alias": "graphics_ghost",
+      "alias": "ghost",
       "path": "assets/graphics/ghost/descriptor.json"
     },
     {
-      "alias": "graphics_hud",
+      "alias": "hud",
       "path": "assets/graphics/hud/descriptor.json"
     },
     {
-      "alias": "graphics_level",
+      "alias": "level",
       "path": "assets/graphics/level/descriptor.json"
     },
     {
-      "alias": "graphics_player",
+      "alias": "player",
       "path": "assets/graphics/player/descriptor.json"
     }
   ],
