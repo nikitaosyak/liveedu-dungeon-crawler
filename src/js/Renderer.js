@@ -9,7 +9,7 @@ export const RENDER_LAYER = {
 export const Renderer = () => {
     let dMenuVisible = false
 
-    const vSize = {x: 800, y: 1280}
+    const vSize = {x: 600, y: 600}
     const maximumWideAR = 1
     const adjustedVSize = {x: 0, y: 0}
     let canvasW = 0, canvasH = 0
@@ -26,7 +26,7 @@ export const Renderer = () => {
 
     const canvas = document.getElementById('gameCanvas')
     const renderer = PIXI.autoDetectRenderer({
-        roundPixels: true,
+        roundPixels: false,
         width: vSize.x,
         height: vSize.y,
         view: canvas,
@@ -39,40 +39,40 @@ export const Renderer = () => {
 
     const resizableObjects = []
     const resizeCanvas = () => {
-        canvasW = Math.max(window.innerWidth || 0, document.documentElement.clientWidth)
-        canvasH = Math.max(window.innerHeight || 0, document.documentElement.clientHeight)
-
-        currentAspectRatio = canvasW / canvasH
-        renderer.resize(canvasW, canvasH)
-        if (currentAspectRatio > supposedAspectRatio) {
-            //
-            // wide screen
-            const actualWidth = Math.ceil(vSize.y * currentAspectRatio)
-            stage.scale.x = stage.scale.y = canvasH / vSize.y
-            adjustedVSize.x = Math.min(vSize.y * maximumWideAR, actualWidth)
-            adjustedVSize.y = vSize.y
-
-            if (canvasW > canvasH * maximumWideAR) {
-                stage.x = Math.round((canvasW - (canvasH * maximumWideAR))/2)
-            } else {
-                stage.x = 0
-            }
-        } else {
-            //
-            // tall screen
-            const actualHeight = Math.ceil(vSize.x * currentAspectRatio)
-            stage.scale.x = stage.scale.y = canvasW / vSize.x
-            adjustedVSize.x = vSize.x
-            adjustedVSize.y = Math.min(vSize.x * maximumWideAR, actualHeight)
-
-            if (canvasH > canvasW * maximumWideAR) {
-                stage.y = Math.round((canvasH - (canvasW * maximumWideAR))/2)
-            } else {
-                stage.y = 0
-            }
-        }
-        // console.log(`real ar: ${currentAspectRatio}, supposed ar: ${supposedAspectRatio}, ${800/adjustedVSize.x}`)
-        resizableObjects.forEach(o => o.adopt(Math.min(currentAspectRatio, maximumWideAR), supposedAspectRatio, adjustedVSize, vSize, maximumWideAR))
+        // canvasW = Math.max(window.innerWidth || 0, document.documentElement.clientWidth)
+        // canvasH = Math.max(window.innerHeight || 0, document.documentElement.clientHeight)
+        //
+        // currentAspectRatio = canvasW / canvasH
+        // renderer.resize(canvasW, canvasH)
+        // if (currentAspectRatio > supposedAspectRatio) {
+        //     //
+        //     // wide screen
+        //     const actualWidth = Math.ceil(vSize.y * currentAspectRatio)
+        //     stage.scale.x = stage.scale.y = canvasH / vSize.y
+        //     adjustedVSize.x = Math.min(vSize.y * maximumWideAR, actualWidth)
+        //     adjustedVSize.y = vSize.y
+        //
+        //     // if (canvasW > canvasH * maximumWideAR) {
+        //     //     stage.x = Math.round((canvasW - (canvasH * maximumWideAR))/2)
+        //     // } else {
+        //     //     stage.x = 0
+        //     // }
+        // } else {
+        //     //
+        //     // tall screen
+        //     const actualHeight = Math.ceil(vSize.x * currentAspectRatio)
+        //     stage.scale.x = stage.scale.y = canvasW / vSize.x
+        //     adjustedVSize.x = vSize.x
+        //     adjustedVSize.y = Math.min(vSize.x * maximumWideAR, actualHeight)
+        //
+        //     // if (canvasH > canvasW * maximumWideAR) {
+        //     //     stage.y = Math.round((canvasH - (canvasW * maximumWideAR))/2)
+        //     // } else {
+        //     //     stage.y = 0
+        //     // }
+        // }
+        // // console.log(`real ar: ${currentAspectRatio}, supposed ar: ${supposedAspectRatio}, ${800/adjustedVSize.x}`)
+        // resizableObjects.forEach(o => o.adopt(Math.min(currentAspectRatio, maximumWideAR), supposedAspectRatio, adjustedVSize, vSize, maximumWideAR))
         // console.log(canvasW, canvasH, stage.scale, window.innerWidth, document.documentElement.clientWidth)
 
     }

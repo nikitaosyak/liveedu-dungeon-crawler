@@ -1,10 +1,6 @@
 import {Resources} from "./Resources";
 import {DivVanisher} from "./utils/DivVanisher";
-import {RENDER_LAYER, Renderer} from "./Renderer";
-import {IAnimated, IVisual} from "./Base";
-import {Isle} from "./level/Isle";
-import {LevelMap} from "./level/LevelMap";
-import {Player} from "./Player";
+import {Renderer} from "./Renderer";
 import {Simulation} from "./SImulation";
 
 window.onload = () => {

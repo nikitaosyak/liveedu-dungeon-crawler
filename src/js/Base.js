@@ -22,7 +22,7 @@ export const IVisual = (spritesheet, frame) => {
 
     let layer = null
     const s = new PIXI.Sprite(window.resources.getTexture(spritesheet, `${frame}.png`))
-
+    s.name = frame
     const self = {
         setSize: (x, y) => { s.width = x; s.height = y; return self },
         setAnchor: (x, y) => { s.anchor.x = x; s.anchor.y = y; return self },
@@ -56,4 +56,26 @@ export const IAnimated = (spritesheet, animation) => {
         get visual() { return s }
     }
     return self
+}
+
+export const IEmitter = (dict) => {
+    return {
+        on: (e, callback) => {
+            if (e in dict) {
+                dict[e].push(callback)
+            } else {
+                dict[e] = [callback]
+            }
+        },
+        clear: (e) => {
+            if (e in dict) {
+                delete dict[e]
+            }
+        },
+        emit: (e, ...args) => {
+            if (e in dict) {
+                dict[e].forEach(cb => cb.apply(null, args))
+            }
+        }
+    }
 }
