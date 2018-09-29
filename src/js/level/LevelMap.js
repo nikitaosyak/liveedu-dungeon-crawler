@@ -1,6 +1,7 @@
 import {Isle} from "./Isle";
 import {MathUtil} from "../utils/MathUtil";
 
+export const TRIGGER_TYPES = {BUTTON: 'BUTTON', TELEPORT: 'TELEPORT'}
 
 export const LevelMap = renderer => {
 
@@ -37,17 +38,22 @@ export const LevelMap = renderer => {
     }
 
     const disallowedAreas = {
-        'tile_10': new PIXI.Rectangle(35, 35, 29, 29),
-        'tile_11': new PIXI.Rectangle(0, 35, 29, 29),
-        'tile_12': new PIXI.Rectangle(32, 0, 32, 20),
-        'tile_13': new PIXI.Rectangle(0, 0, 32, 20)
+        'tile_10': new SAT.Box(new SAT.Vector(35, 35), 30, 30).toPolygon(),
+        'tile_11': new SAT.Box(new SAT.Vector(-1, 35), 30, 30).toPolygon(),
+        'tile_12': new SAT.Box(new SAT.Vector(32, -1), 33, 21).toPolygon(),
+        'tile_13': new SAT.Box(new SAT.Vector(-1, -1), 33, 21).toPolygon()
+    }
+
+    const triggerAreas = {
+        'tile_20': new SAT.Box(new SAT.Vector(0, 0), 64, 64).toPolygon(),
+        'tile_30': new SAT.Box(new SAT.Vector(0, 0), 64, 64).toPolygon()
     }
 
     let colliderRect = new PIXI.Rectangle()
+    let response = new SAT.Response()
     return {
         collide: player => {
-            // console.log(tiles.length)
-            // console.log(player.visual.x, player.visual.y)
+            const triggerResult = []
             tiles.forEach(t => {
                 if (t.visual
                     .getBounds(false, colliderRect)
@@ -60,51 +66,38 @@ export const LevelMap = renderer => {
                         const top = colliderRect.top + area.y
                         const bottom = top + area.h
 
-                        // console.log(left, right, top, bottom, colliderRect)
                         player.visual.x = MathUtil.clamp(left, right, player.visual.x)
                         player.visual.y = MathUtil.clamp(top, bottom, player.visual.y)
                     }
 
                     if (t.visual.name in disallowedAreas) {
-                        const area = disallowedAreas[t.visual.name]
-
-                        const posX = player.visual.x - colliderRect.left
-                        const posY = player.visual.y - colliderRect.top
-
-                        if (area.contains(posX, posY)) {
-                            const fromLeft = posX - area.left
-                            const fromRight = area.right - posX
-                            const fromTop = posY - area.top
-                            const fromBottom = area.bottom - posY
-
-                            // if (fromLeft === 0 || fromRight === 0 || fromTop === 0 || fromBottom === 0) return
-                            // console.log(player.visual.x, player.visual.y)
-
-                            let hGap = 0
-                            let vGap = 0
-                            if (fromLeft < fromRight) {
-                                player.visual.x = colliderRect.left + area.left - 0.1
-                            } else {
-                                player.visual.x = colliderRect.left + area.left + area.width + 0.1
-                            }
-
-                            if (fromTop < fromBottom) {
-                                player.visual.y = colliderRect.top + area.top - 0.1
-                            } else {
-                                player.visual.y = colliderRect.top + area.top + area.height + 0.1
-                            }
-                            // console.log(fromTop, fromBottom, fromLeft, fromRight)
-                            // console.log(player.visual.x, player.visual.y)
-                            // if (hGap < vGap) {
-                            //     if (hGap < 0) {
-                            //
-                            //     }
-                            //     // player.visual.x += hGap
-                            // } else {
-                            //     // player.visual.y += vGap
-                            // }
+                        const box = disallowedAreas[t.visual.name]
+                        const localPos = new SAT.Vector(
+                            player.visual.x - colliderRect.left,
+                            player.visual.y - colliderRect.top
+                        )
+                        const playerCircle = new SAT.Circle(localPos, 1)
+                        response.clear()
+                        if (SAT.testCirclePolygon(playerCircle, box, response)) {
+                            player.visual.x -= response.overlapV.x
+                            player.visual.y -= response.overlapV.y
                         }
                     }
+
+                    if (t.visual.name in triggerAreas) {
+                        const box = triggerAreas[t.visual.name]
+                        const localPos = new SAT.Vector(
+                            player.visual.x - colliderRect.left,
+                            player.visual.y - colliderRect.top
+                        )
+                        const playerCircle = new SAT.Circle(localPos, 1)
+                        response.clear()
+                        if (SAT.testCirclePolygon(playerCircle, box, response)) {
+                            // triggerResult.push()
+                            console.log(t.visual.name)
+                        }
+                    }
+
                 }
             })
         }

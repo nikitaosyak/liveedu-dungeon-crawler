@@ -24,6 +24,7 @@ export const IVisual = (spritesheet, frame) => {
     const s = new PIXI.Sprite(window.resources.getTexture(spritesheet, `${frame}.png`))
     s.name = frame
     const self = {
+        setName: v => {s.name = v; return self},
         setSize: (x, y) => { s.width = x; s.height = y; return self },
         setAnchor: (x, y) => { s.anchor.x = x; s.anchor.y = y; return self },
         setPosition: (x, y) => { s.x = x; s.y = y; return self },
