@@ -10,28 +10,58 @@ export const OBJECT_TYPE = {
 
 export const Simulation = renderer => {
 
+    let death = false
+
     const player = Player()
     renderer.addObject(player)
 
     renderer.viewport.follow(player.visual, {speed: 50})
 
     const map = LevelMap(renderer)
-    const input = Input()
+    const input = Input(renderer.stage)
 
-    const ghost = Ghost()
+    const ghosts = []
+    let ghost = Ghost()
+    ghost.on('deathblow', () => death = true)
     ghost.visual.x = 300
     ghost.visual.y = 300
     renderer.addObject(ghost)
+    ghosts.push(ghost)
+
+    ghost = Ghost()
+    ghost.on('deathblow', () => death = true)
+    ghost.visual.x = 900
+    ghost.visual.y = 300
+    renderer.addObject(ghost)
+    ghosts.push(ghost)
+
+    ghost = Ghost()
+    ghost.on('deathblow', () => death = true)
+    ghost.visual.x = 300
+    ghost.visual.y = 900
+    renderer.addObject(ghost)
+    ghosts.push(ghost)
+
+    ghost = Ghost()
+    ghost.on('deathblow', () => death = true)
+    ghost.visual.x = 900
+    ghost.visual.y = 900
+    renderer.addObject(ghost)
+    ghosts.push(ghost)
+
 
     return {
         update: dt => {
-            player.update(dt, input.velocity, input.attack)
+            player.update(dt, input.velocity, input.attack, death)
             if (input.attack) {
                 input.attack = false
             }
-
-            ghost.update(dt, player)
             map.collide(player)
+
+            ghosts.forEach(g => {
+                g.update(dt, player)
+            })
+
         }
     }
 }

@@ -33,7 +33,7 @@ export const LevelMap = renderer => {
 
     while (teleports.length) {
         const current = teleports[0]
-        const targetIdx = teleports.length-1//MathUtil.randomRange(1, teleports.length-1)
+        const targetIdx = teleports.length-1 >= 2 ? 2 : 1
         const target = teleports[targetIdx]
         if (target.isle === current.isle) continue
         current.leadsTo = target
@@ -44,26 +44,27 @@ export const LevelMap = renderer => {
 
 
     const allowedAreas = {
-        'tile_1': {x: 32, y: 20, w: 32, h: 46},
-        'tile_2': {x: 0, y: 20, w: 64, h: 46},
-        'tile_3': {x: 0, y: 20, w: 32, h: 46},
-        'tile_4': {x: 32, y: 0, w: 32, h: 64},
-        'tile_5': {x: 0, y: 0, w: 64, h: 64},
-        'tile_6': {x: 0, y: 0, w: 32, h: 64},
-        'tile_7': {x: 32, y: 0, w: 32, h: 40},
-        'tile_8': {x: 0, y: 0, w: 64, h: 40},
-        'tile_9': {x: 0, y: 0, w: 32, h: 40}
+        'level_tile_1': {x: 32, y: 20, w: 32, h: 46},
+        'level_tile_2': {x: 0, y: 20, w: 64, h: 46},
+        'level_tile_3': {x: 0, y: 20, w: 32, h: 46},
+        'level_tile_4': {x: 32, y: 0, w: 32, h: 64},
+        'level_tile_5': {x: 0, y: 0, w: 64, h: 64},
+        'level_tile_6': {x: 0, y: 0, w: 32, h: 64},
+        'level_tile_7': {x: 32, y: 0, w: 32, h: 40},
+        'level_tile_8': {x: 0, y: 0, w: 64, h: 40},
+        'level_tile_9': {x: 0, y: 0, w: 32, h: 40}
     }
 
     const disallowedAreas = {
-        'tile_10': new SAT.Box(new SAT.Vector(35, 35), 30, 30).toPolygon(),
-        'tile_11': new SAT.Box(new SAT.Vector(-1, 35), 30, 30).toPolygon(),
-        'tile_12': new SAT.Box(new SAT.Vector(32, -1), 33, 21).toPolygon(),
-        'tile_13': new SAT.Box(new SAT.Vector(-1, -1), 33, 21).toPolygon()
+        'level_tile_10': new SAT.Box(new SAT.Vector(35, 35), 30, 30).toPolygon(),
+        'level_tile_11': new SAT.Box(new SAT.Vector(-1, 35), 30, 30).toPolygon(),
+        'level_tile_12': new SAT.Box(new SAT.Vector(32, -1), 33, 21).toPolygon(),
+        'level_tile_13': new SAT.Box(new SAT.Vector(-1, -1), 33, 21).toPolygon()
     }
 
     let colliderRect = new PIXI.Rectangle(0, 0, 64, 64)
     let response = new SAT.Response()
+    let pressedButtons = 0
     return {
         collide: player => {
             const triggerResult = []
@@ -102,6 +103,14 @@ export const LevelMap = renderer => {
                             player.visual.y - colliderRect.top
                         )
                         if (t.collided(response, playerLocalPosition) && t.enabled) {
+                            if (t.type === OBJECT_TYPE.BUTTON) {
+                                pressedButtons += 1
+                                console.log('buttons pressed: ' + pressedButtons)
+                                if (pressedButtons === 4) {
+                                    window.confirm('You win!')
+                                    window.location.href = window.location.origin
+                                }
+                            }
                             t.trigger()
                             triggerResult.push(t.type)
 

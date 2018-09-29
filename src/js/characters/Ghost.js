@@ -1,4 +1,4 @@
-import {IAnimated, IVisual} from "../Base";
+import {IAnimated, IEmitter, IVisual} from "../Base";
 import {RENDER_LAYER} from "../Renderer";
 import {MathUtil} from "../utils/MathUtil";
 
@@ -20,7 +20,6 @@ export const Ghost = () => {
 
     let chaseStart = new SAT.Vector()
     const updateMovement = new SAT.Vector()
-    let wasHit = false
     const self = {
         update: (dt, player) => {
             const distanceFrom = poi => {
@@ -78,6 +77,7 @@ export const Ghost = () => {
                     if (distanceFrom(chosenFlank) < 5) {
                         // console.log('ATTACK')
                         currentState = GHOST_STATES.ATTACK
+                        self.setAnimationSpeed(0.07)
                         return
                     }
                 } else {
@@ -97,16 +97,27 @@ export const Ghost = () => {
                 facing = player.visual.x > self.visual.x ? 1 : -1
                 self.visual.loop = false
 
-                if (self.visual.currentFrame === 2 && !wasHit) {
-                    if (distanceFrom(player.visual) < 50) {
-                        wasHit = true
+                self.visual.onFrameChange = () => {
+                    if (currentAnimation === GHOST_ANIMATION.ATTACK &&
+                        self.visual.currentFrame === 2) {
+                        if (distanceFrom(player.visual) < 50) {
+                            const s = window.resources.getSFX('sfx_punch1')
+                            s.volume = 0.3
+                            s.play()
+                            self.emit('deathblow')
+                        } else {
+                            const s = window.resources.getSFX('sfx_punch3')
+                            s.volume = 0.5
+                            s.play()
+                        }
                     }
                 }
 
+
                 if (self.visual.currentFrame === self.visual.totalFrames-1) {
-                    wasHit = false
                     newAnimation = GHOST_ANIMATION.WALK
                     self.visual.loop = true
+                    self.setAnimationSpeed(0.1)
                     currentState = GHOST_STATES.CHASE
                 }
             }
@@ -129,7 +140,7 @@ export const Ghost = () => {
 
             if (newAnimation !== currentAnimation) {
                 self.setNewTextures(newAnimation)
-                self.visual.play()
+                self.visual.gotoAndPlay(0)
                 currentAnimation = newAnimation
             }
 
@@ -139,6 +150,8 @@ export const Ghost = () => {
             self.visual.scale.x = facing > 0 ? -1 : 1
         }
     }
+
+    Object.assign(self, IEmitter({}))
 
     Object.assign(self, IAnimated('ghost', currentAnimation)
         .setAnchor(0.5, 0.625)

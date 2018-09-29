@@ -1,4 +1,4 @@
-import {IAnimated, ITrigger, ITypedObject, IVisual} from "../Base";
+import {IAnimated, ITrigger, ITypedObject, IVisual, IVisual2} from "../Base";
 import {RENDER_LAYER} from "../Renderer";
 import {OBJECT_TYPE} from "../SImulation";
 
@@ -8,9 +8,9 @@ export const Teleport = (x, y) => {
         _disabled: false
     }
 
-    Object.assign(self, IVisual('level', `tile_5`)
+    Object.assign(self, IVisual2(`level_tile_5`)
         .setPosition(x, y)
-        .setLayer(RENDER_LAYER.LEVEL_BACKGROUND).setName('tile_20'))
+        .setLayer(RENDER_LAYER.LEVEL_BACKGROUND))
     Object.assign(self, ITypedObject(OBJECT_TYPE.TELEPORT))
     Object.assign(self, ITrigger(
         new SAT.Box(new SAT.Vector(10, 20), 44, 24).toPolygon(),
@@ -29,6 +29,11 @@ export const Teleport = (x, y) => {
             self._disabled = false
         }
         if (self._disabled) return false
+        if (collision) {
+            const s = window.resources.getSFX('sfx_teleport')
+            s.volume = 0.5
+            s.play()
+        }
         return collision
     }
 

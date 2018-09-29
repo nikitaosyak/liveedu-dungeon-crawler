@@ -25,6 +25,11 @@ export const Resources = () => {
             console.warn('texture', alias, 'was replaced with default texture')
             return PIXI.Texture.WHITE
         },
+        getTexture2: (alias) => {
+            if (alias in res) return res[alias].texture
+            console.warn('texture', alias, 'was replaced with default texture')
+            return PIXI.Texture.WHITE
+        },
         getTextures: (spritesheet, animation) => {
             if (spritesheet in res) {
                 const result = []

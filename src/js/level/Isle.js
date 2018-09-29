@@ -1,4 +1,4 @@
-import {IVisual} from "../Base";
+import {IVisual2} from "../Base";
 import {RENDER_LAYER} from "../Renderer";
 import {Teleport} from "./Teleport";
 import {Button} from "./Button";
@@ -21,7 +21,7 @@ export const Isle = isleId => {
             } else if (tile === 20) {
                 self.visualTiles.push(new Teleport(x*64, y*64))
             } else {
-                self.visualTiles.push(IVisual('level', `tile_${tile}`)
+                self.visualTiles.push(IVisual2(`level_tile_${tile}`)
                     .setPosition(x * 64, y * 64)
                     .setLayer(RENDER_LAYER.LEVEL_BACKGROUND))
             }

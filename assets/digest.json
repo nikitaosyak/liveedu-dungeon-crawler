@@ -17,6 +17,58 @@
       "path": "assets/graphics/level/descriptor.json"
     },
     {
+      "alias": "level_tile_1",
+      "path": "assets/graphics/level/tile_1.png"
+    },
+    {
+      "alias": "level_tile_10",
+      "path": "assets/graphics/level/tile_10.png"
+    },
+    {
+      "alias": "level_tile_11",
+      "path": "assets/graphics/level/tile_11.png"
+    },
+    {
+      "alias": "level_tile_12",
+      "path": "assets/graphics/level/tile_12.png"
+    },
+    {
+      "alias": "level_tile_13",
+      "path": "assets/graphics/level/tile_13.png"
+    },
+    {
+      "alias": "level_tile_2",
+      "path": "assets/graphics/level/tile_2.png"
+    },
+    {
+      "alias": "level_tile_3",
+      "path": "assets/graphics/level/tile_3.png"
+    },
+    {
+      "alias": "level_tile_4",
+      "path": "assets/graphics/level/tile_4.png"
+    },
+    {
+      "alias": "level_tile_5",
+      "path": "assets/graphics/level/tile_5.png"
+    },
+    {
+      "alias": "level_tile_6",
+      "path": "assets/graphics/level/tile_6.png"
+    },
+    {
+      "alias": "level_tile_7",
+      "path": "assets/graphics/level/tile_7.png"
+    },
+    {
+      "alias": "level_tile_8",
+      "path": "assets/graphics/level/tile_8.png"
+    },
+    {
+      "alias": "level_tile_9",
+      "path": "assets/graphics/level/tile_9.png"
+    },
+    {
       "alias": "player",
       "path": "assets/graphics/player/descriptor.json"
     }
@@ -61,6 +113,10 @@
     {
       "alias": "sfx_step1",
       "path": "assets/sfx/step1.mp3"
+    },
+    {
+      "alias": "sfx_teleport",
+      "path": "assets/sfx/teleport.mp3"
     }
   ],
   "level": [

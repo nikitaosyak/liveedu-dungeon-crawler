@@ -193,19 +193,6 @@
             <key type="filename">powerup_health_1.png</key>
             <key type="filename">powerup_health_2.png</key>
             <key type="filename">powerup_health_3.png</key>
-            <key type="filename">tile_1.png</key>
-            <key type="filename">tile_10.png</key>
-            <key type="filename">tile_11.png</key>
-            <key type="filename">tile_12.png</key>
-            <key type="filename">tile_13.png</key>
-            <key type="filename">tile_2.png</key>
-            <key type="filename">tile_3.png</key>
-            <key type="filename">tile_4.png</key>
-            <key type="filename">tile_5.png</key>
-            <key type="filename">tile_6.png</key>
-            <key type="filename">tile_7.png</key>
-            <key type="filename">tile_8.png</key>
-            <key type="filename">tile_9.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -286,19 +273,6 @@
             <filename>prop_rock.png</filename>
             <filename>prop_tombstone.png</filename>
             <filename>prop_tree.png</filename>
-            <filename>tile_1.png</filename>
-            <filename>tile_2.png</filename>
-            <filename>tile_3.png</filename>
-            <filename>tile_4.png</filename>
-            <filename>tile_5.png</filename>
-            <filename>tile_6.png</filename>
-            <filename>tile_7.png</filename>
-            <filename>tile_8.png</filename>
-            <filename>tile_9.png</filename>
-            <filename>tile_10.png</filename>
-            <filename>tile_11.png</filename>
-            <filename>tile_12.png</filename>
-            <filename>tile_13.png</filename>
             <filename>teleport_0.png</filename>
             <filename>teleport_1.png</filename>
             <filename>teleport_2.png</filename>
