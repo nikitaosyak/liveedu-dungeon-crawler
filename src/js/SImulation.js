@@ -1,6 +1,7 @@
 import {LevelMap} from "./level/LevelMap";
-import {Player} from "./Player";
+import {Player} from "./characters/Player";
 import {Input} from "./Input";
+import {Ghost} from "./characters/Ghost";
 
 export const OBJECT_TYPE = {
     TELEPORT: 'TELEPORT',
@@ -17,11 +18,17 @@ export const Simulation = renderer => {
     const map = LevelMap(renderer)
     const input = Input()
 
+    const ghost = Ghost()
+    renderer.addObject(ghost)
+
     return {
         update: dt => {
-            player.visual.x += input.velocity.x * player.MOVE_SPEED * dt
-            player.visual.y += input.velocity.y * player.MOVE_SPEED * dt
+            player.update(dt, input.velocity, input.attack)
+            if (input.attack) {
+                input.attack = false
+            }
 
+            ghost.update(dt, player)
             map.collide(player)
         }
     }

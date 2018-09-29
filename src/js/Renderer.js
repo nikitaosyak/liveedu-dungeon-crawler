@@ -80,7 +80,7 @@ export const Renderer = () => {
         }
         // console.log(`real ar: ${currentAspectRatio}, supposed ar: ${supposedAspectRatio}, ${800/adjustedVSize.x}`)
         resizableObjects.forEach(o => o.adopt(Math.min(currentAspectRatio, maximumWideAR), supposedAspectRatio, adjustedVSize, vSize, maximumWideAR))
-        console.log(canvasW, canvasH, stage.scale, window.innerWidth, document.documentElement.clientWidth)
+        // console.log(canvasW, canvasH, stage.scale, window.innerWidth, document.documentElement.clientWidth)
 
     }
     resizeCanvas()

@@ -73,6 +73,7 @@ export const IAnimated = (spritesheet, animation) => {
         setPosition: (x, y) => { s.x = x; s.y = y; return self },
         setLayer: v => { layer = v; return self },
         setAnimationSpeed: v => { s.animationSpeed = v; return self },
+        setNewTextures: animation => { s.textures = window.resources.getTextures(spritesheet, animation) },
         get layer() { return layer },
         get visual() { return s }
     }

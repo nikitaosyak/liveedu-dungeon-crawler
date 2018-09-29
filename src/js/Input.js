@@ -9,7 +9,7 @@ export const INPUT_ACTION = {
 export const Input = () => {
 
     const self = {
-        velocity: {x: 0, y: 0},
+        velocity: new SAT.Vector(0, 0),
         attack: false
     }
 
@@ -81,7 +81,7 @@ export const Input = () => {
             }
         }
         pressed.splice(pressed.indexOf(e.keyCode), 1)
-        MathUtil.normalize(self.velocity, 1)
+        self.velocity.normalize()
     }
 
     return self
