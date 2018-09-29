@@ -19,6 +19,8 @@ export const Simulation = renderer => {
     const input = Input()
 
     const ghost = Ghost()
+    ghost.visual.x = 300
+    ghost.visual.y = 300
     renderer.addObject(ghost)
 
     return {

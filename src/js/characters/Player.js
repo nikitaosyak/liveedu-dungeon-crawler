@@ -11,7 +11,20 @@ export const Player = () => {
     let facing = 1
     let currentAnimation = 'idle'
 
+    const leftFlank = new SAT.Vector()
+    const rightFlank = new SAT.Vector()
+
     const self = {
+        get leftFlank() {
+            leftFlank.x = self.visual.x - 50
+            leftFlank.y = self.visual.y
+            return leftFlank
+        },
+        get rightFlank() {
+            rightFlank.x = self.visual.x + 50
+            rightFlank.y = self.visual.y
+            return rightFlank
+        },
         update: (dt, velocity, attack) => {
             let newAnimation = currentAnimation
 

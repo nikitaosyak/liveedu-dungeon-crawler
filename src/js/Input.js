@@ -81,7 +81,9 @@ export const Input = () => {
             }
         }
         pressed.splice(pressed.indexOf(e.keyCode), 1)
-        self.velocity.normalize()
+        if (!MathUtil.approximately(self.velocity.len2(), 0)) {
+            self.velocity.normalize()
+        }
     }
 
     return self
