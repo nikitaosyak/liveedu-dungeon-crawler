@@ -1,4 +1,24 @@
 
+export const ITypedObject = type => {
+    return {
+        get type() { return type }
+    }
+}
+
+export const ITrigger = (box, enabledBehaviour, actOnSelfBehaviour) => {
+    return {
+        get box() { return box },
+        get enabled() { return enabledBehaviour() },
+        trigger() { actOnSelfBehaviour() },
+        collided(response, playerPos) {
+            const playerCircle = new SAT.Circle(playerPos, 1)
+            response.clear()
+
+            return SAT.testCirclePolygon(playerCircle, box, response)
+        }
+    }
+}
+
 export const IContainer = () => {
     let layer = null
     const c = new PIXI.Container()

@@ -9,7 +9,7 @@ export const RENDER_LAYER = {
 export const Renderer = () => {
     let dMenuVisible = false
 
-    const vSize = {x: 600, y: 600}
+    const vSize = {x: 1000, y: 800}
     const maximumWideAR = 1
     const adjustedVSize = {x: 0, y: 0}
     let canvasW = 0, canvasH = 0

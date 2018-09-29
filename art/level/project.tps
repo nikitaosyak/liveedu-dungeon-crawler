@@ -90,9 +90,9 @@
         <key>maxTextureSize</key>
         <QSize>
             <key>width</key>
-            <int>512</int>
+            <int>1024</int>
             <key>height</key>
-            <int>512</int>
+            <int>1024</int>
         </QSize>
         <key>fixedTextureSize</key>
         <QSize>
@@ -185,10 +185,10 @@
         <map type="IndividualSpriteSettingsMap">
             <key type="filename">floor_button.png</key>
             <key type="filename">floor_button_pressed.png</key>
+            <key type="filename">powerup_compat_0.png</key>
             <key type="filename">powerup_compat_1.png</key>
             <key type="filename">powerup_compat_2.png</key>
             <key type="filename">powerup_compat_3.png</key>
-            <key type="filename">powerup_compat_4.png</key>
             <key type="filename">powerup_health_0.png</key>
             <key type="filename">powerup_health_1.png</key>
             <key type="filename">powerup_health_2.png</key>
@@ -250,6 +250,22 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
+            <key type="filename">teleport_0.png</key>
+            <key type="filename">teleport_1.png</key>
+            <key type="filename">teleport_2.png</key>
+            <key type="filename">teleport_3.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>32,16,64,32</rect>
+                <key>scale9Paddings</key>
+                <rect>32,16,64,32</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
         </map>
         <key>fileList</key>
         <array>
@@ -262,7 +278,6 @@
             <filename>powerup_compat_1.png</filename>
             <filename>powerup_compat_2.png</filename>
             <filename>powerup_compat_3.png</filename>
-            <filename>powerup_compat_4.png</filename>
             <filename>powerup_health_0.png</filename>
             <filename>powerup_health_1.png</filename>
             <filename>powerup_health_2.png</filename>
@@ -284,6 +299,11 @@
             <filename>tile_11.png</filename>
             <filename>tile_12.png</filename>
             <filename>tile_13.png</filename>
+            <filename>teleport_0.png</filename>
+            <filename>teleport_1.png</filename>
+            <filename>teleport_2.png</filename>
+            <filename>teleport_3.png</filename>
+            <filename>powerup_compat_0.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

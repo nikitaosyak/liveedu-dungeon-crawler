@@ -1,5 +1,7 @@
 import {IVisual} from "../Base";
 import {RENDER_LAYER} from "../Renderer";
+import {Teleport} from "./Teleport";
+import {Button} from "./Button";
 
 export const Isle = isleId => {
 
@@ -15,13 +17,9 @@ export const Isle = isleId => {
             tile = parseInt(tile)
             if (tile === 0) return
             if (tile === 30) {
-                const baseTile = IVisual('level', `tile_5`)
-                    .setPosition(x * 64, y * 64)
-                    .setLayer(RENDER_LAYER.LEVEL_BACKGROUND).setName('tile_30')
-                baseTile.visual.addChild(IVisual('level', 'floor_button').visual)
-                self.visualTiles.push(baseTile)
+                self.visualTiles.push(new Button(x*64, y*64))
             } else if (tile === 20) {
-
+                self.visualTiles.push(new Teleport(x*64, y*64))
             } else {
                 self.visualTiles.push(IVisual('level', `tile_${tile}`)
                     .setPosition(x * 64, y * 64)
