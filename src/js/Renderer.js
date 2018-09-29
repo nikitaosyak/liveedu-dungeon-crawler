@@ -9,7 +9,7 @@ export const RENDER_LAYER = {
 export const Renderer = () => {
     let dMenuVisible = false
 
-    const vSize = {x: 1000, y: 800}
+    const vSize = {x: 500, y: 500}
     const maximumWideAR = 1
     const adjustedVSize = {x: 0, y: 0}
     let canvasW = 0, canvasH = 0
@@ -18,15 +18,22 @@ export const Renderer = () => {
     let currentAspectRatio = supposedAspectRatio
 
     const stage = new PIXI.Container()
+
+    const viewport = new PIXI.extras.Viewport({
+        screenWidth: vSize.x,
+        screenHeight: vSize.y
+    })
+    stage.addChild(viewport)
+
     const layers = {}
     Object.keys(RENDER_LAYER).forEach(layer => {
         layers[layer] = new PIXI.Container()
-        stage.addChild(layers[layer])
+        viewport.addChild(layers[layer])
     })
 
     const canvas = document.getElementById('gameCanvas')
     const renderer = PIXI.autoDetectRenderer({
-        roundPixels: false,
+        roundPixels: true,
         width: vSize.x,
         height: vSize.y,
         view: canvas,
@@ -39,41 +46,41 @@ export const Renderer = () => {
 
     const resizableObjects = []
     const resizeCanvas = () => {
-        // canvasW = Math.max(window.innerWidth || 0, document.documentElement.clientWidth)
-        // canvasH = Math.max(window.innerHeight || 0, document.documentElement.clientHeight)
-        //
-        // currentAspectRatio = canvasW / canvasH
-        // renderer.resize(canvasW, canvasH)
-        // if (currentAspectRatio > supposedAspectRatio) {
-        //     //
-        //     // wide screen
-        //     const actualWidth = Math.ceil(vSize.y * currentAspectRatio)
-        //     stage.scale.x = stage.scale.y = canvasH / vSize.y
-        //     adjustedVSize.x = Math.min(vSize.y * maximumWideAR, actualWidth)
-        //     adjustedVSize.y = vSize.y
-        //
-        //     // if (canvasW > canvasH * maximumWideAR) {
-        //     //     stage.x = Math.round((canvasW - (canvasH * maximumWideAR))/2)
-        //     // } else {
-        //     //     stage.x = 0
-        //     // }
-        // } else {
-        //     //
-        //     // tall screen
-        //     const actualHeight = Math.ceil(vSize.x * currentAspectRatio)
-        //     stage.scale.x = stage.scale.y = canvasW / vSize.x
-        //     adjustedVSize.x = vSize.x
-        //     adjustedVSize.y = Math.min(vSize.x * maximumWideAR, actualHeight)
-        //
-        //     // if (canvasH > canvasW * maximumWideAR) {
-        //     //     stage.y = Math.round((canvasH - (canvasW * maximumWideAR))/2)
-        //     // } else {
-        //     //     stage.y = 0
-        //     // }
-        // }
-        // // console.log(`real ar: ${currentAspectRatio}, supposed ar: ${supposedAspectRatio}, ${800/adjustedVSize.x}`)
-        // resizableObjects.forEach(o => o.adopt(Math.min(currentAspectRatio, maximumWideAR), supposedAspectRatio, adjustedVSize, vSize, maximumWideAR))
-        // console.log(canvasW, canvasH, stage.scale, window.innerWidth, document.documentElement.clientWidth)
+        canvasW = Math.max(window.innerWidth || 0, document.documentElement.clientWidth)
+        canvasH = Math.max(window.innerHeight || 0, document.documentElement.clientHeight)
+
+        currentAspectRatio = canvasW / canvasH
+        renderer.resize(canvasW, canvasH)
+        if (currentAspectRatio > supposedAspectRatio) {
+            //
+            // wide screen
+            const actualWidth = Math.ceil(vSize.y * currentAspectRatio)
+            stage.scale.x = stage.scale.y = canvasH / vSize.y
+            adjustedVSize.x = Math.min(vSize.y * maximumWideAR, actualWidth)
+            adjustedVSize.y = vSize.y
+
+            // if (canvasW > canvasH * maximumWideAR) {
+            //     stage.x = Math.round((canvasW - (canvasH * maximumWideAR))/2)
+            // } else {
+            //     stage.x = 0
+            // }
+        } else {
+            //
+            // tall screen
+            const actualHeight = Math.ceil(vSize.x * currentAspectRatio)
+            stage.scale.x = stage.scale.y = canvasW / vSize.x
+            adjustedVSize.x = vSize.x
+            adjustedVSize.y = Math.min(vSize.x * maximumWideAR, actualHeight)
+
+            // if (canvasH > canvasW * maximumWideAR) {
+            //     stage.y = Math.round((canvasH - (canvasW * maximumWideAR))/2)
+            // } else {
+            //     stage.y = 0
+            // }
+        }
+        // console.log(`real ar: ${currentAspectRatio}, supposed ar: ${supposedAspectRatio}, ${800/adjustedVSize.x}`)
+        resizableObjects.forEach(o => o.adopt(Math.min(currentAspectRatio, maximumWideAR), supposedAspectRatio, adjustedVSize, vSize, maximumWideAR))
+        console.log(canvasW, canvasH, stage.scale, window.innerWidth, document.documentElement.clientWidth)
 
     }
     resizeCanvas()
@@ -90,7 +97,11 @@ export const Renderer = () => {
         get size() { return adjustedVSize },
         get vSize() { return vSize },
         get stage() { return stage },
+        get viewport() { return viewport },
         get layers() { return layers },
+        addViewport: vp => {
+            layers[RENDER_LAYER.CHARACTERS].addChild(vp)
+        },
         addObject: (go) => {
             if (typeof go.visual === 'undefined') return console.error(`object ${go} cannot be added for render`)
             if (typeof go.adopt !== 'undefined') {
@@ -101,7 +112,7 @@ export const Renderer = () => {
             if (parent) {
                 parent.addChild(go.visual)
             } else {
-                stage.addChild(go.visual)
+                viewport.addChild(go.visual)
             }
         },
         removeObject: go => {
@@ -113,7 +124,7 @@ export const Renderer = () => {
             if (parent) {
                 parent.removeChild(go.visual)
             } else {
-                stage.removeChild(go.visual)
+                viewport.removeChild(go.visual)
             }
         },
         update: dt => {

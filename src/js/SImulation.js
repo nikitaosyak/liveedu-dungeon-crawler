@@ -11,6 +11,9 @@ export const Simulation = renderer => {
 
     const player = Player()
     renderer.addObject(player)
+
+    renderer.viewport.follow(player.visual, {speed: 50})
+
     const map = LevelMap(renderer)
     const input = Input()
 

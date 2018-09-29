@@ -33,6 +33,3472 @@ crossOrigin:t.crossOrigin,loadType:a.Resource.LOAD_TYPE.IMAGE,metadata:t.metadat
 !function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports):"function"==typeof define&&define.amd?define(["exports"],t):t(e.__pixiSound=e.__pixiSound||{})}(this,function(e){"use strict";function t(e,t){function n(){this.constructor=e}o(e,t),e.prototype=null===t?Object.create(t):(n.prototype=t.prototype,new n)}if("undefined"==typeof PIXI)throw"PixiJS required";var n=function(){function e(e,t){this._output=t,this._input=e}return Object.defineProperty(e.prototype,"destination",{get:function(){return this._input},enumerable:!0,configurable:!0}),Object.defineProperty(e.prototype,"filters",{get:function(){return this._filters},set:function(e){var t=this;if(this._filters&&(this._filters.forEach(function(e){e&&e.disconnect()}),this._filters=null,this._input.connect(this._output)),e&&e.length){this._filters=e.slice(0),this._input.disconnect();var n=null;e.forEach(function(e){null===n?t._input.connect(e.destination):n.connect(e.destination),n=e}),n.connect(this._output)}},enumerable:!0,configurable:!0}),e.prototype.destroy=function(){this.filters=null,this._input=null,this._output=null},e}(),o=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(e,t){e.__proto__=t}||function(e,t){for(var n in t)t.hasOwnProperty(n)&&(e[n]=t[n])},i=0,r=function(e){function n(t){var n=e.call(this)||this;return n.id=i++,n.init(t),n}return t(n,e),Object.defineProperty(n.prototype,"progress",{get:function(){return this._source.currentTime/this._duration},enumerable:!0,configurable:!0}),Object.defineProperty(n.prototype,"paused",{get:function(){return this._paused},set:function(e){this._paused=e,this.refreshPaused()},enumerable:!0,configurable:!0}),n.prototype._onPlay=function(){this._playing=!0},n.prototype._onPause=function(){this._playing=!1},n.prototype.init=function(e){this._playing=!1,this._duration=e.source.duration;var t=this._source=e.source.cloneNode(!1);t.src=e.parent.url,t.onplay=this._onPlay.bind(this),t.onpause=this._onPause.bind(this),e.context.on("refresh",this.refresh,this),e.context.on("refreshPaused",this.refreshPaused,this),this._media=e},n.prototype._internalStop=function(){this._source&&this._playing&&(this._source.onended=null,this._source.pause())},n.prototype.stop=function(){this._internalStop(),this._source&&this.emit("stop")},Object.defineProperty(n.prototype,"speed",{get:function(){return this._speed},set:function(e){this._speed=e,this.refresh()},enumerable:!0,configurable:!0}),Object.defineProperty(n.prototype,"volume",{get:function(){return this._volume},set:function(e){this._volume=e,this.refresh()},enumerable:!0,configurable:!0}),Object.defineProperty(n.prototype,"loop",{get:function(){return this._loop},set:function(e){this._loop=e,this.refresh()},enumerable:!0,configurable:!0}),Object.defineProperty(n.prototype,"muted",{get:function(){return this._muted},set:function(e){this._muted=e,this.refresh()},enumerable:!0,configurable:!0}),n.prototype.refresh=function(){var e=this._media.context,t=this._media.parent;this._source.loop=this._loop||t.loop;var n=e.volume*(e.muted?0:1),o=t.volume*(t.muted?0:1),i=this._volume*(this._muted?0:1);this._source.volume=i*n*o,this._source.playbackRate=this._speed*e.speed*t.speed},n.prototype.refreshPaused=function(){var e=this._media.context,t=this._media.parent,n=this._paused||t.paused||e.paused;n!==this._pausedReal&&(this._pausedReal=n,n?(this._internalStop(),this.emit("paused")):(this.emit("resumed"),this.play({start:this._source.currentTime,end:this._end,volume:this._volume,speed:this._speed,loop:this._loop})),this.emit("pause",n))},n.prototype.play=function(e){var t=this,o=e.start,i=e.end,r=e.speed,s=e.loop,u=e.volume,a=e.muted;i&&console.assert(i>o,"End time is before start time"),this._speed=r,this._volume=u,this._loop=!!s,this._muted=a,this.refresh(),this.loop&&null!==i&&(console.warn('Looping not support when specifying an "end" time'),this.loop=!1),this._start=o,this._end=i||this._duration,this._start=Math.max(0,this._start-n.PADDING),this._end=Math.min(this._end+n.PADDING,this._duration),this._source.onloadedmetadata=function(){t._source&&(t._source.currentTime=o,t._source.onloadedmetadata=null,t.emit("progress",o,t._duration),PIXI.ticker.shared.add(t._onUpdate,t))},this._source.onended=this._onComplete.bind(this),this._source.play(),this.emit("start")},n.prototype._onUpdate=function(){this.emit("progress",this.progress,this._duration),this._source.currentTime>=this._end&&!this._source.loop&&this._onComplete()},n.prototype._onComplete=function(){PIXI.ticker.shared.remove(this._onUpdate,this),this._internalStop(),this.emit("progress",1,this._duration),this.emit("end",this)},n.prototype.destroy=function(){PIXI.ticker.shared.remove(this._onUpdate,this),this.removeAllListeners();var e=this._source;e&&(e.onended=null,e.onplay=null,e.onpause=null,this._internalStop()),this._source=null,this._speed=1,this._volume=1,this._loop=!1,this._end=null,this._start=0,this._duration=0,this._playing=!1,this._pausedReal=!1,this._paused=!1,this._muted=!1,this._media&&(this._media.context.off("refresh",this.refresh,this),this._media.context.off("refreshPaused",this.refreshPaused,this),this._media=null)},n.prototype.toString=function(){return"[HTMLAudioInstance id="+this.id+"]"},n.PADDING=.1,n}(PIXI.utils.EventEmitter),s=function(e){function n(){return null!==e&&e.apply(this,arguments)||this}return t(n,e),n.prototype.init=function(e){this.parent=e,this._source=e.options.source||new Audio,e.url&&(this._source.src=e.url)},n.prototype.create=function(){return new r(this)},Object.defineProperty(n.prototype,"isPlayable",{get:function(){return!!this._source&&4===this._source.readyState},enumerable:!0,configurable:!0}),Object.defineProperty(n.prototype,"duration",{get:function(){return this._source.duration},enumerable:!0,configurable:!0}),Object.defineProperty(n.prototype,"context",{get:function(){return this.parent.context},enumerable:!0,configurable:!0}),Object.defineProperty(n.prototype,"filters",{get:function(){return null},set:function(e){console.warn("HTML Audio does not support filters")},enumerable:!0,configurable:!0}),n.prototype.destroy=function(){this.removeAllListeners(),this.parent=null,this._source&&(this._source.src="",this._source.load(),this._source=null)},Object.defineProperty(n.prototype,"source",{get:function(){return this._source},enumerable:!0,configurable:!0}),n.prototype.load=function(e){var t=this._source,n=this.parent;if(4===t.readyState){n.isLoaded=!0;var o=n.autoPlayStart();return void(e&&setTimeout(function(){e(null,n,o)},0))}if(!n.url)return e(new Error("sound.url or sound.source must be set"));t.src=n.url;var i=function(){t.removeEventListener("canplaythrough",r),t.removeEventListener("load",r),t.removeEventListener("abort",s),t.removeEventListener("error",u)},r=function(){i(),n.isLoaded=!0;var t=n.autoPlayStart();e&&e(null,n,t)},s=function(){i(),e&&e(new Error("Sound loading has been aborted"))},u=function(){i();var n="Failed to load audio element (code: "+t.error.code+")";e?e(new Error(n)):console.error(n)};t.addEventListener("canplaythrough",r,!1),t.addEventListener("load",r,!1),t.addEventListener("abort",s,!1),t.addEventListener("error",u,!1),t.load()},n}(PIXI.utils.EventEmitter),u="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self?self:{},a=function(e,t){return t={exports:{}},e(t,t.exports),t.exports}(function(e){!function(t){function n(){}function o(e,t){return function(){e.apply(t,arguments)}}function i(e){if(!(this instanceof i))throw new TypeError("Promises must be constructed via new");if("function"!=typeof e)throw new TypeError("not a function");this._state=0,this._handled=!1,this._value=void 0,this._deferreds=[],l(e,this)}function r(e,t){for(;3===e._state;)e=e._value;if(0===e._state)return void e._deferreds.push(t);e._handled=!0,i._immediateFn(function(){var n=1===e._state?t.onFulfilled:t.onRejected;if(null===n)return void(1===e._state?s:u)(t.promise,e._value);var o;try{o=n(e._value)}catch(e){return void u(t.promise,e)}s(t.promise,o)})}function s(e,t){try{if(t===e)throw new TypeError("A promise cannot be resolved with itself.");if(t&&("object"==typeof t||"function"==typeof t)){var n=t.then;if(t instanceof i)return e._state=3,e._value=t,void a(e);if("function"==typeof n)return void l(o(n,t),e)}e._state=1,e._value=t,a(e)}catch(t){u(e,t)}}function u(e,t){e._state=2,e._value=t,a(e)}function a(e){2===e._state&&0===e._deferreds.length&&i._immediateFn(function(){e._handled||i._unhandledRejectionFn(e._value)});for(var t=0,n=e._deferreds.length;t<n;t++)r(e,e._deferreds[t]);e._deferreds=null}function c(e,t,n){this.onFulfilled="function"==typeof e?e:null,this.onRejected="function"==typeof t?t:null,this.promise=n}function l(e,t){var n=!1;try{e(function(e){n||(n=!0,s(t,e))},function(e){n||(n=!0,u(t,e))})}catch(e){if(n)return;n=!0,u(t,e)}}var p=setTimeout;i.prototype.catch=function(e){return this.then(null,e)},i.prototype.then=function(e,t){var o=new this.constructor(n);return r(this,new c(e,t,o)),o},i.all=function(e){return new i(function(t,n){function o(e,s){try{if(s&&("object"==typeof s||"function"==typeof s)){var u=s.then;if("function"==typeof u)return void u.call(s,function(t){o(e,t)},n)}i[e]=s,0==--r&&t(i)}catch(e){n(e)}}if(!e||void 0===e.length)throw new TypeError("Promise.all accepts an array");var i=Array.prototype.slice.call(e);if(0===i.length)return t([]);for(var r=i.length,s=0;s<i.length;s++)o(s,i[s])})},i.resolve=function(e){return e&&"object"==typeof e&&e.constructor===i?e:new i(function(t){t(e)})},i.reject=function(e){return new i(function(t,n){n(e)})},i.race=function(e){return new i(function(t,n){for(var o=0,i=e.length;o<i;o++)e[o].then(t,n)})},i._immediateFn="function"==typeof setImmediate&&function(e){setImmediate(e)}||function(e){p(e,0)},i._unhandledRejectionFn=function(e){"undefined"!=typeof console&&console&&console.warn("Possible Unhandled Promise Rejection:",e)},i._setImmediateFn=function(e){i._immediateFn=e},i._setUnhandledRejectionFn=function(e){i._unhandledRejectionFn=e},e.exports?e.exports=i:t.Promise||(t.Promise=i)}(u)}),c=function(){function e(e,t){this.destination=e,this.source=t||e}return e.prototype.connect=function(e){this.source.connect(e)},e.prototype.disconnect=function(){this.source.disconnect()},e.prototype.destroy=function(){this.disconnect(),this.destination=null,this.source=null},e}(),l=function(){function e(){}return e.setParamValue=function(e,t){if(e.setValueAtTime){var n=S.instance.context;e.setValueAtTime(t,n.audioContext.currentTime)}else e.value=t;return t},e}(),p=function(e){function n(t,o,i,r,s,u,a,c,p,h){void 0===t&&(t=0),void 0===o&&(o=0),void 0===i&&(i=0),void 0===r&&(r=0),void 0===s&&(s=0),void 0===u&&(u=0),void 0===a&&(a=0),void 0===c&&(c=0),void 0===p&&(p=0),void 0===h&&(h=0);var d=this;if(S.instance.useLegacy)return void(d=e.call(this,null)||this);var f=[{f:n.F32,type:"lowshelf",gain:t},{f:n.F64,type:"peaking",gain:o},{f:n.F125,type:"peaking",gain:i},{f:n.F250,type:"peaking",gain:r},{f:n.F500,type:"peaking",gain:s},{f:n.F1K,type:"peaking",gain:u},{f:n.F2K,type:"peaking",gain:a},{f:n.F4K,type:"peaking",gain:c},{f:n.F8K,type:"peaking",gain:p},{f:n.F16K,type:"highshelf",gain:h}].map(function(e){var t=S.instance.context.audioContext.createBiquadFilter();return t.type=e.type,l.setParamValue(t.gain,e.gain),l.setParamValue(t.Q,1),l.setParamValue(t.frequency,e.f),t});(d=e.call(this,f[0],f[f.length-1])||this).bands=f,d.bandsMap={};for(var _=0;_<d.bands.length;_++){var y=d.bands[_];_>0&&d.bands[_-1].connect(y),d.bandsMap[y.frequency.value]=y}return d}return t(n,e),n.prototype.setGain=function(e,t){if(void 0===t&&(t=0),!this.bandsMap[e])throw"No band found for frequency "+e;l.setParamValue(this.bandsMap[e].gain,t)},n.prototype.getGain=function(e){if(!this.bandsMap[e])throw"No band found for frequency "+e;return this.bandsMap[e].gain.value},Object.defineProperty(n.prototype,"f32",{get:function(){return this.getGain(n.F32)},set:function(e){this.setGain(n.F32,e)},enumerable:!0,configurable:!0}),Object.defineProperty(n.prototype,"f64",{get:function(){return this.getGain(n.F64)},set:function(e){this.setGain(n.F64,e)},enumerable:!0,configurable:!0}),Object.defineProperty(n.prototype,"f125",{get:function(){return this.getGain(n.F125)},set:function(e){this.setGain(n.F125,e)},enumerable:!0,configurable:!0}),Object.defineProperty(n.prototype,"f250",{get:function(){return this.getGain(n.F250)},set:function(e){this.setGain(n.F250,e)},enumerable:!0,configurable:!0}),Object.defineProperty(n.prototype,"f500",{get:function(){return this.getGain(n.F500)},set:function(e){this.setGain(n.F500,e)},enumerable:!0,configurable:!0}),Object.defineProperty(n.prototype,"f1k",{get:function(){return this.getGain(n.F1K)},set:function(e){this.setGain(n.F1K,e)},enumerable:!0,configurable:!0}),Object.defineProperty(n.prototype,"f2k",{get:function(){return this.getGain(n.F2K)},set:function(e){this.setGain(n.F2K,e)},enumerable:!0,configurable:!0}),Object.defineProperty(n.prototype,"f4k",{get:function(){return this.getGain(n.F4K)},set:function(e){this.setGain(n.F4K,e)},enumerable:!0,configurable:!0}),Object.defineProperty(n.prototype,"f8k",{get:function(){return this.getGain(n.F8K)},set:function(e){this.setGain(n.F8K,e)},enumerable:!0,configurable:!0}),Object.defineProperty(n.prototype,"f16k",{get:function(){return this.getGain(n.F16K)},set:function(e){this.setGain(n.F16K,e)},enumerable:!0,configurable:!0}),n.prototype.reset=function(){this.bands.forEach(function(e){l.setParamValue(e.gain,0)})},n.prototype.destroy=function(){this.bands.forEach(function(e){e.disconnect()}),this.bands=null,this.bandsMap=null},n.F32=32,n.F64=64,n.F125=125,n.F250=250,n.F500=500,n.F1K=1e3,n.F2K=2e3,n.F4K=4e3,n.F8K=8e3,n.F16K=16e3,n}(c),h=function(e){function n(t){void 0===t&&(t=0);var n=this;if(S.instance.useLegacy)return void(n=e.call(this,null)||this);var o=S.instance.context.audioContext.createWaveShaper();return n=e.call(this,o)||this,n._distortion=o,n.amount=t,n}return t(n,e),Object.defineProperty(n.prototype,"amount",{get:function(){return this._amount},set:function(e){e*=1e3,this._amount=e;for(var t,n=new Float32Array(44100),o=Math.PI/180,i=0;i<44100;++i)t=2*i/44100-1,n[i]=(3+e)*t*20*o/(Math.PI+e*Math.abs(t));this._distortion.curve=n,this._distortion.oversample="4x"},enumerable:!0,configurable:!0}),n.prototype.destroy=function(){this._distortion=null,e.prototype.destroy.call(this)},n}(c),d=function(e){function n(t){void 0===t&&(t=0);var n=this;if(S.instance.useLegacy)return void(n=e.call(this,null)||this);var o,i,r,s=S.instance.context.audioContext;return s.createStereoPanner?r=o=s.createStereoPanner():((i=s.createPanner()).panningModel="equalpower",r=i),n=e.call(this,r)||this,n._stereo=o,n._panner=i,n.pan=t,n}return t(n,e),Object.defineProperty(n.prototype,"pan",{get:function(){return this._pan},set:function(e){this._pan=e,this._stereo?l.setParamValue(this._stereo.pan,e):this._panner.setPosition(e,0,1-Math.abs(e))},enumerable:!0,configurable:!0}),n.prototype.destroy=function(){e.prototype.destroy.call(this),this._stereo=null,this._panner=null},n}(c),f=function(e){function n(t,n,o){void 0===t&&(t=3),void 0===n&&(n=2),void 0===o&&(o=!1);var i=this;if(S.instance.useLegacy)return void(i=e.call(this,null)||this);var r=S.instance.context.audioContext.createConvolver();return i=e.call(this,r)||this,i._convolver=r,i._seconds=i._clamp(t,1,50),i._decay=i._clamp(n,0,100),i._reverse=o,i._rebuild(),i}return t(n,e),n.prototype._clamp=function(e,t,n){return Math.min(n,Math.max(t,e))},Object.defineProperty(n.prototype,"seconds",{get:function(){return this._seconds},set:function(e){this._seconds=this._clamp(e,1,50),this._rebuild()},enumerable:!0,configurable:!0}),Object.defineProperty(n.prototype,"decay",{get:function(){return this._decay},set:function(e){this._decay=this._clamp(e,0,100),this._rebuild()},enumerable:!0,configurable:!0}),Object.defineProperty(n.prototype,"reverse",{get:function(){return this._reverse},set:function(e){this._reverse=e,this._rebuild()},enumerable:!0,configurable:!0}),n.prototype._rebuild=function(){for(var e,t=S.instance.context.audioContext,n=t.sampleRate,o=n*this._seconds,i=t.createBuffer(2,o,n),r=i.getChannelData(0),s=i.getChannelData(1),u=0;u<o;u++)e=this._reverse?o-u:u,r[u]=(2*Math.random()-1)*Math.pow(1-e/o,this._decay),s[u]=(2*Math.random()-1)*Math.pow(1-e/o,this._decay);this._convolver.buffer=i},n.prototype.destroy=function(){this._convolver=null,e.prototype.destroy.call(this)},n}(c),_=function(e){function n(){var t=this;S.instance.useLegacy&&(t=e.call(this,null)||this);var n=S.instance.context.audioContext,o=n.createChannelSplitter(),i=n.createChannelMerger();return i.connect(o),t=e.call(this,i,o)||this,t._merger=i,t}return t(n,e),n.prototype.destroy=function(){this._merger.disconnect(),this._merger=null,e.prototype.destroy.call(this)},n}(c),y=function(e){function n(){if(S.instance.useLegacy)return void(e.call(this,null)||this);var t=S.instance.context.audioContext,n=t.createBiquadFilter(),o=t.createBiquadFilter(),i=t.createBiquadFilter(),r=t.createBiquadFilter();return n.type="lowpass",l.setParamValue(n.frequency,2e3),o.type="lowpass",l.setParamValue(o.frequency,2e3),i.type="highpass",l.setParamValue(i.frequency,500),r.type="highpass",l.setParamValue(r.frequency,500),n.connect(o),o.connect(i),i.connect(r),e.call(this,n,r)||this}return t(n,e),n}(c),m=Object.freeze({Filter:c,EqualizerFilter:p,DistortionFilter:h,StereoFilter:d,ReverbFilter:f,MonoFilter:_,TelephoneFilter:y}),b=function(e){function n(){var t=e.call(this)||this;return t.speed=1,t.volume=1,t.muted=!1,t.paused=!1,t}return t(n,e),n.prototype.refresh=function(){this.emit("refresh")},n.prototype.refreshPaused=function(){this.emit("refreshPaused")},Object.defineProperty(n.prototype,"filters",{get:function(){return console.warn("HTML Audio does not support filters"),null},set:function(e){console.warn("HTML Audio does not support filters")},enumerable:!0,configurable:!0}),Object.defineProperty(n.prototype,"audioContext",{get:function(){return console.warn("HTML Audio does not support audioContext"),null},enumerable:!0,configurable:!0}),n.prototype.toggleMute=function(){return this.muted=!this.muted,this.refresh(),this.muted},n.prototype.togglePause=function(){return this.paused=!this.paused,this.refreshPaused(),this.paused},n.prototype.destroy=function(){this.removeAllListeners()},n}(PIXI.utils.EventEmitter),g=Object.freeze({HTMLAudioMedia:s,HTMLAudioInstance:r,HTMLAudioContext:b}),v=0,P=function(e){function n(t){var n=e.call(this)||this;return n.id=v++,n._media=null,n._paused=!1,n._muted=!1,n._elapsed=0,n._updateListener=n._update.bind(n),n.init(t),n}return t(n,e),n.prototype.stop=function(){this._source&&(this._internalStop(),this.emit("stop"))},Object.defineProperty(n.prototype,"speed",{get:function(){return this._speed},set:function(e){this._speed=e,this.refresh(),this._update(!0)},enumerable:!0,configurable:!0}),Object.defineProperty(n.prototype,"volume",{get:function(){return this._volume},set:function(e){this._volume=e,this.refresh()},enumerable:!0,configurable:!0}),Object.defineProperty(n.prototype,"muted",{get:function(){return this._muted},set:function(e){this._muted=e,this.refresh()},enumerable:!0,configurable:!0}),Object.defineProperty(n.prototype,"loop",{get:function(){return this._loop},set:function(e){this._loop=e,this.refresh()},enumerable:!0,configurable:!0}),n.prototype.refresh=function(){var e=this._media.context,t=this._media.parent;this._source.loop=this._loop||t.loop;var n=e.volume*(e.muted?0:1),o=t.volume*(t.muted?0:1),i=this._volume*(this._muted?0:1);l.setParamValue(this._gain.gain,i*o*n),l.setParamValue(this._source.playbackRate,this._speed*t.speed*e.speed)},n.prototype.refreshPaused=function(){var e=this._media.context,t=this._media.parent,n=this._paused||t.paused||e.paused;n!==this._pausedReal&&(this._pausedReal=n,n?(this._internalStop(),this.emit("paused")):(this.emit("resumed"),this.play({start:this._elapsed%this._duration,end:this._end,speed:this._speed,loop:this._loop,volume:this._volume})),this.emit("pause",n))},n.prototype.play=function(e){var t=e.start,n=e.end,o=e.speed,i=e.loop,r=e.volume,s=e.muted;n&&console.assert(n>t,"End time is before start time"),this._paused=!1;var u=this._media.nodes.cloneBufferSource(),a=u.source,c=u.gain;this._source=a,this._gain=c,this._speed=o,this._volume=r,this._loop=!!i,this._muted=s,this.refresh(),this.loop&&null!==n&&(console.warn('Looping not support when specifying an "end" time'),this.loop=!1),this._end=n;var l=this._source.buffer.duration;this._duration=l,this._lastUpdate=this._now(),this._elapsed=t,this._source.onended=this._onComplete.bind(this),n?this._source.start(0,t,n-t):this._source.start(0,t),this.emit("start"),this._update(!0),this._enabled=!0},n.prototype._toSec=function(e){return e>10&&(e/=1e3),e||0},Object.defineProperty(n.prototype,"_enabled",{set:function(e){var t=this._media.nodes.script;t.removeEventListener("audioprocess",this._updateListener),e&&t.addEventListener("audioprocess",this._updateListener)},enumerable:!0,configurable:!0}),Object.defineProperty(n.prototype,"progress",{get:function(){return this._progress},enumerable:!0,configurable:!0}),Object.defineProperty(n.prototype,"paused",{get:function(){return this._paused},set:function(e){this._paused=e,this.refreshPaused()},enumerable:!0,configurable:!0}),n.prototype.destroy=function(){this.removeAllListeners(),this._internalStop(),this._source&&(this._source.disconnect(),this._source=null),this._gain&&(this._gain.disconnect(),this._gain=null),this._media&&(this._media.context.events.off("refresh",this.refresh,this),this._media.context.events.off("refreshPaused",this.refreshPaused,this),this._media=null),this._end=null,this._speed=1,this._volume=1,this._loop=!1,this._elapsed=0,this._duration=0,this._paused=!1,this._muted=!1,this._pausedReal=!1},n.prototype.toString=function(){return"[WebAudioInstance id="+this.id+"]"},n.prototype._now=function(){return this._media.context.audioContext.currentTime},n.prototype._update=function(e){if(void 0===e&&(e=!1),this._source){var t=this._now(),n=t-this._lastUpdate;if(n>0||e){var o=this._source.playbackRate.value;this._elapsed+=n*o,this._lastUpdate=t;var i=this._duration,r=this._elapsed%i/i;this._progress=r,this.emit("progress",this._progress,i)}}},n.prototype.init=function(e){this._media=e,e.context.events.on("refresh",this.refresh,this),e.context.events.on("refreshPaused",this.refreshPaused,this)},n.prototype._internalStop=function(){this._source&&(this._enabled=!1,this._source.onended=null,this._source.stop(0),this._source=null)},n.prototype._onComplete=function(){this._source&&(this._enabled=!1,this._source.onended=null),this._source=null,this._progress=1,this.emit("progress",1,this._duration),this.emit("end",this)},n}(PIXI.utils.EventEmitter),x=function(e){function n(t){var o=this,i=t.audioContext,r=i.createBufferSource(),s=i.createScriptProcessor(n.BUFFER_SIZE),u=i.createGain(),a=i.createAnalyser();return r.connect(a),a.connect(u),u.connect(t.destination),s.connect(t.destination),o=e.call(this,a,u)||this,o.context=t,o.bufferSource=r,o.script=s,o.gain=u,o.analyser=a,o}return t(n,e),n.prototype.destroy=function(){e.prototype.destroy.call(this),this.bufferSource.disconnect(),this.script.disconnect(),this.gain.disconnect(),this.analyser.disconnect(),this.bufferSource=null,this.script=null,this.gain=null,this.analyser=null,this.context=null},n.prototype.cloneBufferSource=function(){var e=this.bufferSource,t=this.context.audioContext.createBufferSource();t.buffer=e.buffer,l.setParamValue(t.playbackRate,e.playbackRate.value),t.loop=e.loop;var n=this.context.audioContext.createGain();return t.connect(n),n.connect(this.destination),{source:t,gain:n}},n.BUFFER_SIZE=256,n}(n),O=function(){function e(){}return e.prototype.init=function(e){this.parent=e,this._nodes=new x(this.context),this._source=this._nodes.bufferSource,this.source=e.options.source},e.prototype.destroy=function(){this.parent=null,this._nodes.destroy(),this._nodes=null,this._source=null,this.source=null},e.prototype.create=function(){return new P(this)},Object.defineProperty(e.prototype,"context",{get:function(){return this.parent.context},enumerable:!0,configurable:!0}),Object.defineProperty(e.prototype,"isPlayable",{get:function(){return!!this._source&&!!this._source.buffer},enumerable:!0,configurable:!0}),Object.defineProperty(e.prototype,"filters",{get:function(){return this._nodes.filters},set:function(e){this._nodes.filters=e},enumerable:!0,configurable:!0}),Object.defineProperty(e.prototype,"duration",{get:function(){return console.assert(this.isPlayable,"Sound not yet playable, no duration"),this._source.buffer.duration},enumerable:!0,configurable:!0}),Object.defineProperty(e.prototype,"buffer",{get:function(){return this._source.buffer},set:function(e){this._source.buffer=e},enumerable:!0,configurable:!0}),Object.defineProperty(e.prototype,"nodes",{get:function(){return this._nodes},enumerable:!0,configurable:!0}),e.prototype.load=function(e){this.source?this._decode(this.source,e):this.parent.url?this._loadUrl(e):e?e(new Error("sound.url or sound.source must be set")):console.error("sound.url or sound.source must be set")},e.prototype._loadUrl=function(e){var t=this,n=new XMLHttpRequest,o=this.parent.url;n.open("GET",o,!0),n.responseType="arraybuffer",n.onload=function(){t.source=n.response,t._decode(n.response,e)},n.send()},e.prototype._decode=function(e,t){var n=this;this.parent.context.decode(e,function(e,o){if(e)t&&t(e);else{n.parent.isLoaded=!0,n.buffer=o;var i=n.parent.autoPlayStart();t&&t(null,n.parent,i)}})},e}(),w=function(){function e(){}return e.resolveUrl=function(t){var n=e.FORMAT_PATTERN,o="string"==typeof t?t:t.url;if(n.test(o)){for(var i=n.exec(o),r=i[2].split(","),s=r[r.length-1],u=0,a=r.length;u<a;u++){var c=r[u];if(e.supported[c]){s=c;break}}var l=o.replace(i[1],s);return"string"!=typeof t&&(t.extension=s,t.url=l),l}return o},e.sineTone=function(e,t){void 0===e&&(e=200),void 0===t&&(t=1);var n=I.from({singleInstance:!0});if(!(n.media instanceof O))return n;for(var o=n.media,i=n.context.audioContext.createBuffer(1,48e3*t,48e3),r=i.getChannelData(0),s=0;s<r.length;s++){var u=e*(s/i.sampleRate)*Math.PI;r[s]=2*Math.sin(u)}return o.buffer=i,n.isLoaded=!0,n},e.render=function(e,t){var n=document.createElement("canvas");t=Object.assign({width:512,height:128,fill:"black"},t||{}),n.width=t.width,n.height=t.height;var o=PIXI.BaseTexture.fromCanvas(n);if(!(e.media instanceof O))return o;var i=e.media;console.assert(!!i.buffer,"No buffer found, load first");var r=n.getContext("2d");r.fillStyle=t.fill;for(var s=i.buffer.getChannelData(0),u=Math.ceil(s.length/t.width),a=t.height/2,c=0;c<t.width;c++){for(var l=1,p=-1,h=0;h<u;h++){var d=s[c*u+h];d<l&&(l=d),d>p&&(p=d)}r.fillRect(c,(1+l)*a,1,Math.max(1,(p-l)*a))}return o},e.playOnce=function(t,n){var o="alias"+e.PLAY_ID++;return S.instance.add(o,{url:t,preload:!0,autoPlay:!0,loaded:function(e){e&&(console.error(e),S.instance.remove(o),n&&n(e))},complete:function(){S.instance.remove(o),n&&n(null)}}),o},e.PLAY_ID=0,e.FORMAT_PATTERN=/\.(\{([^\}]+)\})(\?.*)?$/,e.extensions=["mp3","ogg","oga","opus","mpeg","wav","m4a","mp4","aiff","wma","mid"],e.supported=function(){var t={m4a:"mp4",oga:"ogg"},n=document.createElement("audio"),o={};return e.extensions.forEach(function(e){var i=t[e]||e,r=n.canPlayType("audio/"+e).replace(/^no$/,""),s=n.canPlayType("audio/"+i).replace(/^no$/,"");o[e]=!!r||!!s}),Object.freeze(o)}(),e}(),j=function(e){function n(t,n){var o=e.call(this,t,n)||this;return o.use(A.plugin),o.pre(A.resolve),o}return t(n,e),n.addPixiMiddleware=function(t){e.addPixiMiddleware.call(this,t)},n}(PIXI.loaders.Loader),A=function(){function e(){}return e.install=function(t){e._sound=t,e.legacy=t.useLegacy,PIXI.loaders.Loader=j,PIXI.loader.use(e.plugin),PIXI.loader.pre(e.resolve)},Object.defineProperty(e,"legacy",{set:function(e){var t=PIXI.loaders.Resource,n=w.extensions;e?n.forEach(function(e){t.setExtensionXhrType(e,t.XHR_RESPONSE_TYPE.DEFAULT),t.setExtensionLoadType(e,t.LOAD_TYPE.AUDIO)}):n.forEach(function(e){t.setExtensionXhrType(e,t.XHR_RESPONSE_TYPE.BUFFER),t.setExtensionLoadType(e,t.LOAD_TYPE.XHR)})},enumerable:!0,configurable:!0}),e.resolve=function(e,t){w.resolveUrl(e),t()},e.plugin=function(t,n){t.data&&w.extensions.indexOf(t.extension)>-1?t.sound=e._sound.add(t.name,{loaded:n,preload:!0,url:t.url,source:t.data}):n()},e}(),F=function(){function e(e,t){this.parent=e,Object.assign(this,t),this.duration=this.end-this.start,console.assert(this.duration>0,"End time must be after start time")}return e.prototype.play=function(e){return this.parent.play(Object.assign({complete:e,speed:this.speed||this.parent.speed,end:this.end,start:this.start}))},e.prototype.destroy=function(){this.parent=null},e}(),E=function(e){function n(){var t=this,o=new n.AudioContext,i=o.createDynamicsCompressor(),r=o.createAnalyser();return r.connect(i),i.connect(o.destination),t=e.call(this,r,i)||this,t._ctx=o,t._offlineCtx=new n.OfflineAudioContext(1,2,o.sampleRate),t._unlocked=!1,t.compressor=i,t.analyser=r,t.events=new PIXI.utils.EventEmitter,t.volume=1,t.speed=1,t.muted=!1,t.paused=!1,"running"!==o.state&&(t._unlock(),t._unlock=t._unlock.bind(t),document.addEventListener("mousedown",t._unlock,!0),document.addEventListener("touchstart",t._unlock,!0),document.addEventListener("touchend",t._unlock,!0)),t}return t(n,e),n.prototype._unlock=function(){this._unlocked||(this.playEmptySound(),"running"===this._ctx.state&&(document.removeEventListener("mousedown",this._unlock,!0),document.removeEventListener("touchend",this._unlock,!0),document.removeEventListener("touchstart",this._unlock,!0),this._unlocked=!0))},n.prototype.playEmptySound=function(){var e=this._ctx.createBufferSource();e.buffer=this._ctx.createBuffer(1,1,22050),e.connect(this._ctx.destination),e.start(0,0,0),"suspended"===e.context.state&&e.context.resume()},Object.defineProperty(n,"AudioContext",{get:function(){var e=window;return e.AudioContext||e.webkitAudioContext||null},enumerable:!0,configurable:!0}),Object.defineProperty(n,"OfflineAudioContext",{get:function(){var e=window;return e.OfflineAudioContext||e.webkitOfflineAudioContext||null},enumerable:!0,configurable:!0}),n.prototype.destroy=function(){e.prototype.destroy.call(this);var t=this._ctx;void 0!==t.close&&t.close(),this.events.removeAllListeners(),this.analyser.disconnect(),this.compressor.disconnect(),this.analyser=null,this.compressor=null,this.events=null,this._offlineCtx=null,this._ctx=null},Object.defineProperty(n.prototype,"audioContext",{get:function(){return this._ctx},enumerable:!0,configurable:!0}),Object.defineProperty(n.prototype,"offlineContext",{get:function(){return this._offlineCtx},enumerable:!0,configurable:!0}),Object.defineProperty(n.prototype,"paused",{get:function(){return this._paused},set:function(e){e&&"running"===this._ctx.state?this._ctx.suspend():e||"suspended"!==this._ctx.state||this._ctx.resume(),this._paused=e},enumerable:!0,configurable:!0}),n.prototype.refresh=function(){this.events.emit("refresh")},n.prototype.refreshPaused=function(){this.events.emit("refreshPaused")},n.prototype.toggleMute=function(){return this.muted=!this.muted,this.refresh(),this.muted},n.prototype.togglePause=function(){return this.paused=!this.paused,this.refreshPaused(),this._paused},n.prototype.decode=function(e,t){this._offlineCtx.decodeAudioData(e,function(e){t(null,e)},function(){t(new Error("Unable to decode file"))})},n}(n),L=Object.freeze({WebAudioMedia:O,WebAudioInstance:P,WebAudioNodes:x,WebAudioContext:E,WebAudioUtils:l}),S=function(){function e(){this.init()}return e.prototype.init=function(){return this.supported&&(this._webAudioContext=new E),this._htmlAudioContext=new b,this._sounds={},this.useLegacy=!this.supported,this},Object.defineProperty(e.prototype,"context",{get:function(){return this._context},enumerable:!0,configurable:!0}),e.init=function(){if(e.instance)throw new Error("SoundLibrary is already created");var t=e.instance=new e;"undefined"==typeof Promise&&(window.Promise=a),void 0!==PIXI.loaders&&A.install(t),void 0===window.__pixiSound&&delete window.__pixiSound;var o=PIXI;return o.sound||(Object.defineProperty(o,"sound",{get:function(){return t}}),Object.defineProperties(t,{filters:{get:function(){return m}},htmlaudio:{get:function(){return g}},webaudio:{get:function(){return L}},utils:{get:function(){return w}},Sound:{get:function(){return I}},SoundSprite:{get:function(){return F}},Filterable:{get:function(){return n}},SoundLibrary:{get:function(){return e}}})),t},Object.defineProperty(e.prototype,"filtersAll",{get:function(){return this.useLegacy?[]:this._context.filters},set:function(e){this.useLegacy||(this._context.filters=e)},enumerable:!0,configurable:!0}),Object.defineProperty(e.prototype,"supported",{get:function(){return null!==E.AudioContext},enumerable:!0,configurable:!0}),e.prototype.add=function(e,t){if("object"==typeof e){var n={};for(var o in e){i=this._getOptions(e[o],t);n[o]=this.add(o,i)}return n}if("string"==typeof e){if(console.assert(!this._sounds[e],"Sound with alias "+e+" already exists."),t instanceof I)return this._sounds[e]=t,t;var i=this._getOptions(t),r=I.from(i);return this._sounds[e]=r,r}},e.prototype._getOptions=function(e,t){var n;return n="string"==typeof e?{url:e}:e instanceof ArrayBuffer||e instanceof HTMLAudioElement?{source:e}:e,Object.assign(n,t||{})},Object.defineProperty(e.prototype,"useLegacy",{get:function(){return this._useLegacy},set:function(e){A.legacy=e,this._useLegacy=e,!e&&this.supported?this._context=this._webAudioContext:this._context=this._htmlAudioContext},enumerable:!0,configurable:!0}),e.prototype.remove=function(e){return this.exists(e,!0),this._sounds[e].destroy(),delete this._sounds[e],this},Object.defineProperty(e.prototype,"volumeAll",{get:function(){return this._context.volume},set:function(e){this._context.volume=e,this._context.refresh()},enumerable:!0,configurable:!0}),Object.defineProperty(e.prototype,"speedAll",{get:function(){return this._context.speed},set:function(e){this._context.speed=e,this._context.refresh()},enumerable:!0,configurable:!0}),e.prototype.togglePauseAll=function(){return this._context.togglePause()},e.prototype.pauseAll=function(){return this._context.paused=!0,this._context.refresh(),this},e.prototype.resumeAll=function(){return this._context.paused=!1,this._context.refresh(),this},e.prototype.toggleMuteAll=function(){return this._context.toggleMute()},e.prototype.muteAll=function(){return this._context.muted=!0,this._context.refresh(),this},e.prototype.unmuteAll=function(){return this._context.muted=!1,this._context.refresh(),this},e.prototype.removeAll=function(){for(var e in this._sounds)this._sounds[e].destroy(),delete this._sounds[e];return this},e.prototype.stopAll=function(){for(var e in this._sounds)this._sounds[e].stop();return this},e.prototype.exists=function(e,t){void 0===t&&(t=!1);var n=!!this._sounds[e];return t&&console.assert(n,"No sound matching alias '"+e+"'."),n},e.prototype.find=function(e){return this.exists(e,!0),this._sounds[e]},e.prototype.play=function(e,t){return this.find(e).play(t)},e.prototype.stop=function(e){return this.find(e).stop()},e.prototype.pause=function(e){return this.find(e).pause()},e.prototype.resume=function(e){return this.find(e).resume()},e.prototype.volume=function(e,t){var n=this.find(e);return void 0!==t&&(n.volume=t),n.volume},e.prototype.speed=function(e,t){var n=this.find(e);return void 0!==t&&(n.speed=t),n.speed},e.prototype.duration=function(e){return this.find(e).duration},e.prototype.close=function(){return this.removeAll(),this._sounds=null,this._webAudioContext&&(this._webAudioContext.destroy(),this._webAudioContext=null),this._htmlAudioContext&&(this._htmlAudioContext.destroy(),this._htmlAudioContext=null),this._context=null,this},e}(),I=function(){function e(e,t){this.media=e,this.options=t,this._instances=[],this._sprites={},this.media.init(this);var n=t.complete;this._autoPlayOptions=n?{complete:n}:null,this.isLoaded=!1,this.isPlaying=!1,this.autoPlay=t.autoPlay,this.singleInstance=t.singleInstance,this.preload=t.preload||this.autoPlay,this.url=t.url,this.speed=t.speed,this.volume=t.volume,this.loop=t.loop,t.sprites&&this.addSprites(t.sprites),this.preload&&this._preload(t.loaded)}return e.from=function(t){var n={};return"string"==typeof t?n.url=t:t instanceof ArrayBuffer||t instanceof HTMLAudioElement?n.source=t:n=t,(n=Object.assign({autoPlay:!1,singleInstance:!1,url:null,source:null,preload:!1,volume:1,speed:1,complete:null,loaded:null,loop:!1},n)).url&&(n.url=w.resolveUrl(n.url)),Object.freeze(n),new e(S.instance.useLegacy?new s:new O,n)},Object.defineProperty(e.prototype,"context",{get:function(){return S.instance.context},enumerable:!0,configurable:!0}),e.prototype.pause=function(){return this.isPlaying=!1,this.paused=!0,this},e.prototype.resume=function(){return this.isPlaying=this._instances.length>0,this.paused=!1,this},Object.defineProperty(e.prototype,"paused",{get:function(){return this._paused},set:function(e){this._paused=e,this.refreshPaused()},enumerable:!0,configurable:!0}),Object.defineProperty(e.prototype,"speed",{get:function(){return this._speed},set:function(e){this._speed=e,this.refresh()},enumerable:!0,configurable:!0}),Object.defineProperty(e.prototype,"filters",{get:function(){return this.media.filters},set:function(e){this.media.filters=e},enumerable:!0,configurable:!0}),e.prototype.addSprites=function(e,t){if("object"==typeof e){var n={};for(var o in e)n[o]=this.addSprites(o,e[o]);return n}if("string"==typeof e){console.assert(!this._sprites[e],"Alias "+e+" is already taken");var i=new F(this,t);return this._sprites[e]=i,i}},e.prototype.destroy=function(){this._removeInstances(),this.removeSprites(),this.media.destroy(),this.media=null,this._sprites=null,this._instances=null},e.prototype.removeSprites=function(e){if(e){var t=this._sprites[e];void 0!==t&&(t.destroy(),delete this._sprites[e])}else for(var n in this._sprites)this.removeSprites(n);return this},Object.defineProperty(e.prototype,"isPlayable",{get:function(){return this.isLoaded&&this.media&&this.media.isPlayable},enumerable:!0,configurable:!0}),e.prototype.stop=function(){if(!this.isPlayable)return this.autoPlay=!1,this._autoPlayOptions=null,this;this.isPlaying=!1;for(var e=this._instances.length-1;e>=0;e--)this._instances[e].stop();return this},e.prototype.play=function(e,t){var n,o=this;if("string"==typeof e?n={sprite:r=e,complete:t}:"function"==typeof e?(n={}).complete=e:n=e,(n=Object.assign({complete:null,loaded:null,sprite:null,end:null,start:0,volume:1,speed:1,muted:!1,loop:!1},n||{})).sprite){var i=n.sprite;console.assert(!!this._sprites[i],"Alias "+i+" is not available");var r=this._sprites[i];n.start=r.start,n.end=r.end,n.speed=r.speed||1,delete n.sprite}if(n.offset&&(n.start=n.offset),!this.isLoaded)return new Promise(function(e,t){o.autoPlay=!0,o._autoPlayOptions=n,o._preload(function(o,i,r){o?t(o):(n.loaded&&n.loaded(o,i,r),e(r))})});this.singleInstance&&this._removeInstances();var s=this._createInstance();return this._instances.push(s),this.isPlaying=!0,s.once("end",function(){n.complete&&n.complete(o),o._onComplete(s)}),s.once("stop",function(){o._onComplete(s)}),s.play(n),s},e.prototype.refresh=function(){for(var e=this._instances.length,t=0;t<e;t++)this._instances[t].refresh()},e.prototype.refreshPaused=function(){for(var e=this._instances.length,t=0;t<e;t++)this._instances[t].refreshPaused()},Object.defineProperty(e.prototype,"volume",{get:function(){return this._volume},set:function(e){this._volume=e,this.refresh()},enumerable:!0,configurable:!0}),Object.defineProperty(e.prototype,"muted",{get:function(){return this._muted},set:function(e){this._muted=e,this.refresh()},enumerable:!0,configurable:!0}),Object.defineProperty(e.prototype,"loop",{get:function(){return this._loop},set:function(e){this._loop=e,this.refresh()},enumerable:!0,configurable:!0}),e.prototype._preload=function(e){this.media.load(e)},Object.defineProperty(e.prototype,"instances",{get:function(){return this._instances},enumerable:!0,configurable:!0}),Object.defineProperty(e.prototype,"sprites",{get:function(){return this._sprites},enumerable:!0,configurable:!0}),Object.defineProperty(e.prototype,"duration",{get:function(){return this.media.duration},enumerable:!0,configurable:!0}),e.prototype.autoPlayStart=function(){var e;return this.autoPlay&&(e=this.play(this._autoPlayOptions)),e},e.prototype._removeInstances=function(){for(var e=this._instances.length-1;e>=0;e--)this._poolInstance(this._instances[e]);this._instances.length=0},e.prototype._onComplete=function(e){if(this._instances){var t=this._instances.indexOf(e);t>-1&&this._instances.splice(t,1),this.isPlaying=this._instances.length>0}this._poolInstance(e)},e.prototype._createInstance=function(){if(e._pool.length>0){var t=e._pool.pop();return t.init(this.media),t}return this.media.create()},e.prototype._poolInstance=function(t){t.destroy(),e._pool.indexOf(t)<0&&e._pool.push(t)},e._pool=[],e}(),C=S.init();e.sound=C,e.filters=m,e.htmlaudio=g,e.webaudio=L,e.Filterable=n,e.Sound=I,e.SoundLibrary=S,e.SoundSprite=F,e.utils=w,Object.defineProperty(e,"__esModule",{value:!0})});
 //# sourceMappingURL=pixi-sound.js.map
 
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var utils = require('./utils');
+var Plugin = require('./plugin');
+
+module.exports = function (_Plugin) {
+    _inherits(Bounce, _Plugin);
+
+    /**
+     * @private
+     * @param {Viewport} parent
+     * @param {object} [options]
+     * @param {string} [options.sides=all] all, horizontal, vertical, or combination of top, bottom, right, left (e.g., 'top-bottom-right')
+     * @param {number} [options.friction=0.5] friction to apply to decelerate if active
+     * @param {number} [options.time=150] time in ms to finish bounce
+     * @param {string|function} [ease=easeInOutSine] ease function or name (see http://easings.net/ for supported names)
+     * @param {string} [options.underflow=center] (top/bottom/center and left/right/center, or center) where to place world if too small for screen
+     * @fires bounce-start-x
+     * @fires bounce.end-x
+     * @fires bounce-start-y
+     * @fires bounce-end-y
+     */
+    function Bounce(parent, options) {
+        _classCallCheck(this, Bounce);
+
+        var _this = _possibleConstructorReturn(this, (Bounce.__proto__ || Object.getPrototypeOf(Bounce)).call(this, parent));
+
+        options = options || {};
+        _this.time = options.time || 150;
+        _this.ease = utils.ease(options.ease, 'easeInOutSine');
+        _this.friction = options.friction || 0.5;
+        options.sides = options.sides || 'all';
+        if (options.sides) {
+            if (options.sides === 'all') {
+                _this.top = _this.bottom = _this.left = _this.right = true;
+            } else if (options.sides === 'horizontal') {
+                _this.right = _this.left = true;
+            } else if (options.sides === 'vertical') {
+                _this.top = _this.bottom = true;
+            } else {
+                _this.top = options.sides.indexOf('top') !== -1;
+                _this.bottom = options.sides.indexOf('bottom') !== -1;
+                _this.left = options.sides.indexOf('left') !== -1;
+                _this.right = options.sides.indexOf('right') !== -1;
+            }
+        }
+        _this.parseUnderflow(options.underflow || 'center');
+        _this.last = {};
+        return _this;
+    }
+
+    _createClass(Bounce, [{
+        key: 'parseUnderflow',
+        value: function parseUnderflow(clamp) {
+            clamp = clamp.toLowerCase();
+            if (clamp === 'center') {
+                this.underflowX = 0;
+                this.underflowY = 0;
+            } else {
+                this.underflowX = clamp.indexOf('left') !== -1 ? -1 : clamp.indexOf('right') !== -1 ? 1 : 0;
+                this.underflowY = clamp.indexOf('top') !== -1 ? -1 : clamp.indexOf('bottom') !== -1 ? 1 : 0;
+            }
+        }
+    }, {
+        key: 'down',
+        value: function down() {
+            this.toX = this.toY = null;
+        }
+    }, {
+        key: 'up',
+        value: function up() {
+            this.bounce();
+        }
+    }, {
+        key: 'update',
+        value: function update(elapsed) {
+            if (this.paused) {
+                return;
+            }
+
+            this.bounce();
+            if (this.toX) {
+                var toX = this.toX;
+                toX.time += elapsed;
+                this.parent.emit('moved', { viewport: this.parent, type: 'bounce-x' });
+                if (toX.time >= this.time) {
+                    this.parent.x = toX.end;
+                    this.toX = null;
+                    this.parent.emit('bounce-x-end', this.parent);
+                } else {
+                    this.parent.x = this.ease(toX.time, toX.start, toX.delta, this.time);
+                }
+                this.parent.dirty = true;
+            }
+            if (this.toY) {
+                var toY = this.toY;
+                toY.time += elapsed;
+                this.parent.emit('moved', { viewport: this.parent, type: 'bounce-y' });
+                if (toY.time >= this.time) {
+                    this.parent.y = toY.end;
+                    this.toY = null;
+                    this.parent.emit('bounce-y-end', this.parent);
+                } else {
+                    this.parent.y = this.ease(toY.time, toY.start, toY.delta, this.time);
+                }
+                this.parent.dirty = true;
+            }
+        }
+    }, {
+        key: 'calcUnderflowX',
+        value: function calcUnderflowX() {
+            var x = void 0;
+            switch (this.underflowX) {
+                case -1:
+                    x = 0;
+                    break;
+                case 1:
+                    x = this.parent.screenWidth - this.parent.screenWorldWidth;
+                    break;
+                default:
+                    x = (this.parent.screenWidth - this.parent.screenWorldWidth) / 2;
+            }
+            return x;
+        }
+    }, {
+        key: 'calcUnderflowY',
+        value: function calcUnderflowY() {
+            var y = void 0;
+            switch (this.underflowY) {
+                case -1:
+                    y = 0;
+                    break;
+                case 1:
+                    y = this.parent.screenHeight - this.parent.screenWorldHeight;
+                    break;
+                default:
+                    y = (this.parent.screenHeight - this.parent.screenWorldHeight) / 2;
+            }
+            return y;
+        }
+    }, {
+        key: 'bounce',
+        value: function bounce() {
+            if (this.paused) {
+                return;
+            }
+
+            var oob = void 0;
+            var decelerate = this.parent.plugins['decelerate'];
+            if (decelerate && (decelerate.x || decelerate.y)) {
+                if (decelerate.x && decelerate.percentChangeX === decelerate.friction || decelerate.y && decelerate.percentChangeY === decelerate.friction) {
+                    oob = this.parent.OOB();
+                    if (oob.left && this.left || oob.right && this.right) {
+                        decelerate.percentChangeX = this.friction;
+                    }
+                    if (oob.top && this.top || oob.bottom && this.bottom) {
+                        decelerate.percentChangeY = this.friction;
+                    }
+                }
+            }
+            var drag = this.parent.plugins['drag'] || {};
+            var pinch = this.parent.plugins['pinch'] || {};
+            decelerate = decelerate || {};
+            if (!drag.active && !pinch.active && (!this.toX || !this.toY) && (!decelerate.x || !decelerate.y)) {
+                oob = oob || this.parent.OOB();
+                var point = oob.cornerPoint;
+                if (!this.toX && !decelerate.x) {
+                    var x = null;
+                    if (oob.left && this.left) {
+                        x = this.parent.screenWorldWidth < this.parent.screenWidth ? this.calcUnderflowX() : 0;
+                    } else if (oob.right && this.right) {
+                        x = this.parent.screenWorldWidth < this.parent.screenWidth ? this.calcUnderflowX() : -point.x;
+                    }
+                    if (x !== null && this.parent.x !== x) {
+                        this.toX = { time: 0, start: this.parent.x, delta: x - this.parent.x, end: x };
+                        this.parent.emit('bounce-x-start', this.parent);
+                    }
+                }
+                if (!this.toY && !decelerate.y) {
+                    var y = null;
+                    if (oob.top && this.top) {
+                        y = this.parent.screenWorldHeight < this.parent.screenHeight ? this.calcUnderflowY() : 0;
+                    } else if (oob.bottom && this.bottom) {
+                        y = this.parent.screenWorldHeight < this.parent.screenHeight ? this.calcUnderflowY() : -point.y;
+                    }
+                    if (y !== null && this.parent.y !== y) {
+                        this.toY = { time: 0, start: this.parent.y, delta: y - this.parent.y, end: y };
+                        this.parent.emit('bounce-y-start', this.parent);
+                    }
+                }
+            }
+        }
+    }, {
+        key: 'reset',
+        value: function reset() {
+            this.toX = this.toY = null;
+        }
+    }]);
+
+    return Bounce;
+}(Plugin);
+
+},{"./plugin":9,"./utils":12}],2:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Plugin = require('./plugin');
+
+module.exports = function (_Plugin) {
+    _inherits(ClampZoom, _Plugin);
+
+    /**
+     * @private
+     * @param {object} [options]
+     * @param {number} [options.minWidth] minimum width
+     * @param {number} [options.minHeight] minimum height
+     * @param {number} [options.maxWidth] maximum width
+     * @param {number} [options.maxHeight] maximum height
+     */
+    function ClampZoom(parent, options) {
+        _classCallCheck(this, ClampZoom);
+
+        var _this = _possibleConstructorReturn(this, (ClampZoom.__proto__ || Object.getPrototypeOf(ClampZoom)).call(this, parent));
+
+        _this.minWidth = options.minWidth;
+        _this.minHeight = options.minHeight;
+        _this.maxWidth = options.maxWidth;
+        _this.maxHeight = options.maxHeight;
+        return _this;
+    }
+
+    _createClass(ClampZoom, [{
+        key: 'resize',
+        value: function resize() {
+            this.clamp();
+        }
+    }, {
+        key: 'clamp',
+        value: function clamp() {
+            if (this.paused) {
+                return;
+            }
+
+            var width = this.parent.worldScreenWidth;
+            var height = this.parent.worldScreenHeight;
+            if (this.minWidth && width < this.minWidth) {
+                this.parent.fitWidth(this.minWidth);
+                width = this.parent.worldScreenWidth;
+                height = this.parent.worldScreenHeight;
+                this.parent.emit('zoomed', { viewport: this.parent, type: 'clamp-zoom' });
+            }
+            if (this.maxWidth && width > this.maxWidth) {
+                this.parent.fitWidth(this.maxWidth);
+                width = this.parent.worldScreenWidth;
+                height = this.parent.worldScreenHeight;
+                this.parent.emit('zoomed', { viewport: this.parent, type: 'clamp-zoom' });
+            }
+            if (this.minHeight && height < this.minHeight) {
+                this.parent.fitHeight(this.minHeight);
+                width = this.parent.worldScreenWidth;
+                height = this.parent.worldScreenHeight;
+                this.parent.emit('zoomed', { viewport: this.parent, type: 'clamp-zoom' });
+            }
+            if (this.maxHeight && height > this.maxHeight) {
+                this.parent.fitHeight(this.maxHeight);
+                this.parent.emit('zoomed', { viewport: this.parent, type: 'clamp-zoom' });
+            }
+        }
+    }]);
+
+    return ClampZoom;
+}(Plugin);
+
+},{"./plugin":9}],3:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Plugin = require('./plugin');
+var utils = require('./utils');
+
+module.exports = function (_Plugin) {
+    _inherits(clamp, _Plugin);
+
+    /**
+     * @private
+     * @param {object} options
+     * @param {(number|boolean)} [options.left] clamp left; true=0
+     * @param {(number|boolean)} [options.right] clamp right; true=viewport.worldWidth
+     * @param {(number|boolean)} [options.top] clamp top; true=0
+     * @param {(number|boolean)} [options.bottom] clamp bottom; true=viewport.worldHeight
+     * @param {string} [options.direction] (all, x, or y) using clamps of [0, viewport.worldWidth/viewport.worldHeight]; replaces left/right/top/bottom if set
+     * @param {string} [options.underflow=center] (top/bottom/center and left/right/center, or center) where to place world if too small for screen
+     */
+    function clamp(parent, options) {
+        _classCallCheck(this, clamp);
+
+        options = options || {};
+
+        var _this = _possibleConstructorReturn(this, (clamp.__proto__ || Object.getPrototypeOf(clamp)).call(this, parent));
+
+        if (typeof options.direction === 'undefined') {
+            _this.left = utils.defaults(options.left, null);
+            _this.right = utils.defaults(options.right, null);
+            _this.top = utils.defaults(options.top, null);
+            _this.bottom = utils.defaults(options.bottom, null);
+        } else {
+            _this.left = options.direction === 'x' || options.direction === 'all';
+            _this.right = options.direction === 'x' || options.direction === 'all';
+            _this.top = options.direction === 'y' || options.direction === 'all';
+            _this.bottom = options.direction === 'y' || options.direction === 'all';
+        }
+        _this.parseUnderflow(options.underflow || 'center');
+        _this.move();
+        return _this;
+    }
+
+    _createClass(clamp, [{
+        key: 'parseUnderflow',
+        value: function parseUnderflow(clamp) {
+            clamp = clamp.toLowerCase();
+            if (clamp === 'center') {
+                this.underflowX = 0;
+                this.underflowY = 0;
+            } else {
+                this.underflowX = clamp.indexOf('left') !== -1 ? -1 : clamp.indexOf('right') !== -1 ? 1 : 0;
+                this.underflowY = clamp.indexOf('top') !== -1 ? -1 : clamp.indexOf('bottom') !== -1 ? 1 : 0;
+            }
+        }
+    }, {
+        key: 'move',
+        value: function move() {
+            this.update();
+        }
+    }, {
+        key: 'update',
+        value: function update() {
+            if (this.paused) {
+                return;
+            }
+
+            var decelerate = this.parent.plugins['decelerate'] || {};
+            if (this.left !== null || this.right !== null) {
+                var moved = void 0;
+                if (this.parent.screenWorldWidth < this.parent.screenWidth) {
+                    switch (this.underflowX) {
+                        case -1:
+                            if (this.parent.x !== 0) {
+                                this.parent.x = 0;
+                                moved = true;
+                            }
+                            break;
+                        case 1:
+                            if (this.parent.x !== this.parent.screenWidth - this.parent.screenWorldWidth) {
+                                this.parent.x = this.parent.screenWidth - this.parent.screenWorldWidth;
+                                moved = true;
+                            }
+                            break;
+                        default:
+                            if (this.parent.x !== (this.parent.screenWidth - this.parent.screenWorldWidth) / 2) {
+                                this.parent.x = (this.parent.screenWidth - this.parent.screenWorldWidth) / 2;
+                                moved = true;
+                            }
+                    }
+                } else {
+                    if (this.left !== null) {
+                        if (this.parent.left < (this.left === true ? 0 : this.left)) {
+                            this.parent.x = -(this.left === true ? 0 : this.left) * this.parent.scale.x;
+                            decelerate.x = 0;
+                            moved = true;
+                        }
+                    }
+                    if (this.right !== null) {
+                        if (this.parent.right > (this.right === true ? this.parent.worldWidth : this.right)) {
+                            this.parent.x = -(this.right === true ? this.parent.worldWidth : this.right) * this.parent.scale.x + this.parent.screenWidth;
+                            decelerate.x = 0;
+                            moved = true;
+                        }
+                    }
+                }
+                if (moved) {
+                    this.parent.emit('moved', { viewport: this.parent, type: 'clamp-x' });
+                }
+            }
+            if (this.top !== null || this.bottom !== null) {
+                var _moved = void 0;
+                if (this.parent.screenWorldHeight < this.parent.screenHeight) {
+                    switch (this.underflowY) {
+                        case -1:
+                            if (this.parent.y !== 0) {
+                                this.parent.y = 0;
+                                _moved = true;
+                            }
+                            break;
+                        case 1:
+                            if (this.parent.y !== this.parent.screenHeight - this.parent.screenWorldHeight) {
+                                this.parent.y = this.parent.screenHeight - this.parent.screenWorldHeight;
+                                _moved = true;
+                            }
+                            break;
+                        default:
+                            if (this.parent.y !== (this.parent.screenHeight - this.parent.screenWorldHeight) / 2) {
+                                this.parent.y = (this.parent.screenHeight - this.parent.screenWorldHeight) / 2;
+                                _moved = true;
+                            }
+                    }
+                } else {
+                    if (this.top !== null) {
+                        if (this.parent.top < (this.top === true ? 0 : this.top)) {
+                            this.parent.y = -(this.top === true ? 0 : this.top) * this.parent.scale.y;
+                            decelerate.y = 0;
+                            _moved = true;
+                        }
+                    }
+                    if (this.bottom !== null) {
+                        if (this.parent.bottom > (this.bottom === true ? this.parent.worldHeight : this.bottom)) {
+                            this.parent.y = -(this.bottom === true ? this.parent.worldHeight : this.bottom) * this.parent.scale.y + this.parent.screenHeight;
+                            decelerate.y = 0;
+                            _moved = true;
+                        }
+                    }
+                }
+                if (_moved) {
+                    this.parent.emit('moved', { viewport: this.parent, type: 'clamp-y' });
+                }
+            }
+        }
+    }]);
+
+    return clamp;
+}(Plugin);
+
+},{"./plugin":9,"./utils":12}],4:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var utils = require('./utils');
+var Plugin = require('./plugin');
+
+module.exports = function (_Plugin) {
+    _inherits(Decelerate, _Plugin);
+
+    /**
+     * @private
+     * @param {Viewport} parent
+     * @param {object} [options]
+     * @param {number} [options.friction=0.95] percent to decelerate after movement
+     * @param {number} [options.bounce=0.8] percent to decelerate when past boundaries (only applicable when viewport.bounce() is active)
+     * @param {number} [options.minSpeed=0.01] minimum velocity before stopping/reversing acceleration
+     */
+    function Decelerate(parent, options) {
+        _classCallCheck(this, Decelerate);
+
+        var _this = _possibleConstructorReturn(this, (Decelerate.__proto__ || Object.getPrototypeOf(Decelerate)).call(this, parent));
+
+        options = options || {};
+        _this.friction = options.friction || 0.95;
+        _this.bounce = options.bounce || 0.5;
+        _this.minSpeed = typeof options.minSpeed !== 'undefined' ? options.minSpeed : 0.01;
+        _this.saved = [];
+        return _this;
+    }
+
+    _createClass(Decelerate, [{
+        key: 'down',
+        value: function down() {
+            this.saved = [];
+            this.x = this.y = false;
+        }
+    }, {
+        key: 'move',
+        value: function move() {
+            if (this.paused) {
+                return;
+            }
+
+            var count = this.parent.countDownPointers();
+            if (count === 1 || count > 1 && !this.parent.plugins['pinch']) {
+                this.saved.push({ x: this.parent.x, y: this.parent.y, time: performance.now() });
+                if (this.saved.length > 60) {
+                    this.saved.splice(0, 30);
+                }
+            }
+        }
+    }, {
+        key: 'up',
+        value: function up() {
+            if (this.parent.countDownPointers() === 0 && this.saved.length) {
+                var now = performance.now();
+                var _iteratorNormalCompletion = true;
+                var _didIteratorError = false;
+                var _iteratorError = undefined;
+
+                try {
+                    for (var _iterator = this.saved[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                        var save = _step.value;
+
+                        if (save.time >= now - 100) {
+                            var time = now - save.time;
+                            this.x = (this.parent.x - save.x) / time;
+                            this.y = (this.parent.y - save.y) / time;
+                            this.percentChangeX = this.percentChangeY = this.friction;
+                            break;
+                        }
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return) {
+                            _iterator.return();
+                        }
+                    } finally {
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+            }
+        }
+
+        /**
+         * manually activate plugin
+         * @param {object} options
+         * @param {number} [options.x]
+         * @param {number} [options.y]
+         */
+
+    }, {
+        key: 'activate',
+        value: function activate(options) {
+            options = options || {};
+            if (typeof options.x !== 'undefined') {
+                this.x = options.x;
+                this.percentChangeX = this.friction;
+            }
+            if (typeof options.y !== 'undefined') {
+                this.y = options.y;
+                this.percentChangeY = this.friction;
+            }
+        }
+    }, {
+        key: 'update',
+        value: function update(elapsed) {
+            if (this.paused) {
+                return;
+            }
+
+            var moved = void 0;
+            if (this.x) {
+                this.parent.x += this.x * elapsed;
+                this.x *= this.percentChangeX;
+                if (Math.abs(this.x) < this.minSpeed) {
+                    this.x = 0;
+                }
+                moved = true;
+            }
+            if (this.y) {
+                this.parent.y += this.y * elapsed;
+                this.y *= this.percentChangeY;
+                if (Math.abs(this.y) < this.minSpeed) {
+                    this.y = 0;
+                }
+                moved = true;
+            }
+            if (moved) {
+                this.parent.dirty = true;
+                this.parent.emit('moved', { viewport: this.parent, type: 'decelerate' });
+            }
+        }
+    }, {
+        key: 'reset',
+        value: function reset() {
+            this.x = this.y = null;
+        }
+    }]);
+
+    return Decelerate;
+}(Plugin);
+
+},{"./plugin":9,"./utils":12}],5:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var utils = require('./utils');
+var Plugin = require('./plugin');
+
+module.exports = function (_Plugin) {
+    _inherits(Drag, _Plugin);
+
+    /**
+     * enable one-finger touch to drag
+     * @private
+     * @param {Viewport} parent
+     * @param {object} [options]
+     * @param {string} [options.direction=all] direction to drag (all, x, or y)
+     * @param {boolean} [options.wheel=true] use wheel to scroll in y direction (unless wheel plugin is active)
+     * @param {number} [options.wheelScroll=1] number of pixels to scroll with each wheel spin
+     * @param {boolean} [options.reverse] reverse the direction of the wheel scroll
+     * @param {boolean|string} [options.clampWheel] (true, x, or y) clamp wheel (to avoid weird bounce with mouse wheel)
+     * @param {string} [options.underflow=center] (top/bottom/center and left/right/center, or center) where to place world if too small for screen
+     */
+    function Drag(parent, options) {
+        _classCallCheck(this, Drag);
+
+        options = options || {};
+
+        var _this = _possibleConstructorReturn(this, (Drag.__proto__ || Object.getPrototypeOf(Drag)).call(this, parent));
+
+        _this.moved = false;
+        _this.wheelActive = utils.defaults(options.wheel, true);
+        _this.wheelScroll = options.wheelScroll || 1;
+        _this.reverse = options.reverse ? 1 : -1;
+        _this.clampWheel = options.clampWheel;
+        _this.xDirection = !options.direction || options.direction === 'all' || options.direction === 'x';
+        _this.yDirection = !options.direction || options.direction === 'all' || options.direction === 'y';
+        _this.parseUnderflow(options.underflow || 'center');
+        return _this;
+    }
+
+    _createClass(Drag, [{
+        key: 'parseUnderflow',
+        value: function parseUnderflow(clamp) {
+            clamp = clamp.toLowerCase();
+            if (clamp === 'center') {
+                this.underflowX = 0;
+                this.underflowY = 0;
+            } else {
+                this.underflowX = clamp.indexOf('left') !== -1 ? -1 : clamp.indexOf('right') !== -1 ? 1 : 0;
+                this.underflowY = clamp.indexOf('top') !== -1 ? -1 : clamp.indexOf('bottom') !== -1 ? 1 : 0;
+            }
+        }
+    }, {
+        key: 'down',
+        value: function down(e) {
+            if (this.paused) {
+                return;
+            }
+            var count = this.parent.countDownPointers();
+            if ((count === 1 || count > 1 && !this.parent.plugins['pinch']) && this.parent.parent) {
+                var parent = this.parent.parent.toLocal(e.data.global);
+                this.last = { x: e.data.global.x, y: e.data.global.y, parent: parent };
+                this.current = e.data.pointerId;
+            } else {
+                this.last = null;
+            }
+        }
+    }, {
+        key: 'move',
+        value: function move(e) {
+            if (this.paused) {
+                return;
+            }
+            if (this.last && this.current === e.data.pointerId) {
+                var x = e.data.global.x;
+                var y = e.data.global.y;
+                var count = this.parent.countDownPointers();
+                if (count === 1 || count > 1 && !this.parent.plugins['pinch']) {
+                    var distX = x - this.last.x;
+                    var distY = y - this.last.y;
+                    if (this.moved || this.xDirection && this.parent.checkThreshold(distX) || this.yDirection && this.parent.checkThreshold(distY)) {
+                        var newParent = this.parent.parent.toLocal(e.data.global);
+                        if (this.xDirection) {
+                            this.parent.x += newParent.x - this.last.parent.x;
+                        }
+                        if (this.yDirection) {
+                            this.parent.y += newParent.y - this.last.parent.y;
+                        }
+                        this.last = { x: x, y: y, parent: newParent };
+                        if (!this.moved) {
+                            this.parent.emit('drag-start', { screen: this.last, world: this.parent.toWorld(this.last), viewport: this.parent });
+                        }
+                        this.moved = true;
+                        this.parent.dirty = true;
+                        this.parent.emit('moved', { viewport: this.parent, type: 'drag' });
+                    }
+                } else {
+                    this.moved = false;
+                }
+            }
+        }
+    }, {
+        key: 'up',
+        value: function up() {
+            var touches = this.parent.getTouchPointers();
+            if (touches.length === 1) {
+                var pointer = touches[0];
+                if (pointer.last) {
+                    var parent = this.parent.parent.toLocal(pointer.last);
+                    this.last = { x: pointer.last.x, y: pointer.last.y, parent: parent };
+                    this.current = pointer.last.data.pointerId;
+                }
+                this.moved = false;
+            } else if (this.last) {
+                if (this.moved) {
+                    this.parent.emit('drag-end', { screen: this.last, world: this.parent.toWorld(this.last), viewport: this.parent });
+                    this.last = this.moved = false;
+                }
+            }
+        }
+    }, {
+        key: 'wheel',
+        value: function wheel(e) {
+            if (this.paused) {
+                return;
+            }
+
+            if (this.wheelActive) {
+                var wheel = this.parent.plugins['wheel'];
+                if (!wheel) {
+                    this.parent.x += e.deltaX * this.wheelScroll * this.reverse;
+                    this.parent.y += e.deltaY * this.wheelScroll * this.reverse;
+                    if (this.clampWheel) {
+                        this.clamp();
+                    }
+                    this.parent.emit('wheel-scroll', this.parent);
+                    this.parent.emit('moved', this.parent);
+                    this.parent.dirty = true;
+                    e.preventDefault();
+                    return true;
+                }
+            }
+        }
+    }, {
+        key: 'resume',
+        value: function resume() {
+            this.last = null;
+            this.paused = false;
+        }
+    }, {
+        key: 'clamp',
+        value: function clamp() {
+            var decelerate = this.parent.plugins['decelerate'] || {};
+            if (this.clampWheel !== 'y') {
+                if (this.parent.screenWorldWidth < this.parent.screenWidth) {
+                    switch (this.underflowX) {
+                        case -1:
+                            this.parent.x = 0;
+                            break;
+                        case 1:
+                            this.parent.x = this.parent.screenWidth - this.parent.screenWorldWidth;
+                            break;
+                        default:
+                            this.parent.x = (this.parent.screenWidth - this.parent.screenWorldWidth) / 2;
+                    }
+                } else {
+                    if (this.parent.left < 0) {
+                        this.parent.x = 0;
+                        decelerate.x = 0;
+                    } else if (this.parent.right > this.parent.worldWidth) {
+                        this.parent.x = -this.parent.worldWidth * this.parent.scale.x + this.parent.screenWidth;
+                        decelerate.x = 0;
+                    }
+                }
+            }
+            if (this.clampWheel !== 'x') {
+                if (this.parent.screenWorldHeight < this.parent.screenHeight) {
+                    switch (this.underflowY) {
+                        case -1:
+                            this.parent.y = 0;
+                            break;
+                        case 1:
+                            this.parent.y = this.parent.screenHeight - this.parent.screenWorldHeight;
+                            break;
+                        default:
+                            this.parent.y = (this.parent.screenHeight - this.parent.screenWorldHeight) / 2;
+                    }
+                } else {
+                    if (this.parent.top < 0) {
+                        this.parent.y = 0;
+                        decelerate.y = 0;
+                    }
+                    if (this.parent.bottom > this.parent.worldHeight) {
+                        this.parent.y = -this.parent.worldHeight * this.parent.scale.y + this.parent.screenHeight;
+                        decelerate.y = 0;
+                    }
+                }
+            }
+        }
+    }, {
+        key: 'active',
+        get: function get() {
+            return this.moved;
+        }
+    }]);
+
+    return Drag;
+}(Plugin);
+
+},{"./plugin":9,"./utils":12}],6:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Plugin = require('./plugin');
+
+module.exports = function (_Plugin) {
+    _inherits(Follow, _Plugin);
+
+    /**
+     * @private
+     * @param {Viewport} parent
+     * @param {PIXI.DisplayObject} target to follow (object must include {x: x-coordinate, y: y-coordinate})
+     * @param {object} [options]
+     * @param {number} [options.speed=0] to follow in pixels/frame (0=teleport to location)
+     * @param {number} [options.radius] radius (in world coordinates) of center circle where movement is allowed without moving the viewport
+     */
+    function Follow(parent, target, options) {
+        _classCallCheck(this, Follow);
+
+        var _this = _possibleConstructorReturn(this, (Follow.__proto__ || Object.getPrototypeOf(Follow)).call(this, parent));
+
+        options = options || {};
+        _this.speed = options.speed || 0;
+        _this.target = target;
+        _this.radius = options.radius;
+        return _this;
+    }
+
+    _createClass(Follow, [{
+        key: 'update',
+        value: function update() {
+            if (this.paused) {
+                return;
+            }
+
+            var center = this.parent.center;
+            var toX = this.target.x,
+                toY = this.target.y;
+            if (this.radius) {
+                var distance = Math.sqrt(Math.pow(this.target.y - center.y, 2) + Math.pow(this.target.x - center.x, 2));
+                if (distance > this.radius) {
+                    var angle = Math.atan2(this.target.y - center.y, this.target.x - center.x);
+                    toX = this.target.x - Math.cos(angle) * this.radius;
+                    toY = this.target.y - Math.sin(angle) * this.radius;
+                } else {
+                    return;
+                }
+            }
+            if (this.speed) {
+                var deltaX = toX - center.x;
+                var deltaY = toY - center.y;
+                if (deltaX || deltaY) {
+                    var _angle = Math.atan2(toY - center.y, toX - center.x);
+                    var changeX = Math.cos(_angle) * this.speed;
+                    var changeY = Math.sin(_angle) * this.speed;
+                    var x = Math.abs(changeX) > Math.abs(deltaX) ? toX : center.x + changeX;
+                    var y = Math.abs(changeY) > Math.abs(deltaY) ? toY : center.y + changeY;
+                    this.parent.moveCenter(x, y);
+                    this.parent.emit('moved', { viewport: this.parent, type: 'follow' });
+                }
+            } else {
+                this.parent.moveCenter(toX, toY);
+                this.parent.emit('moved', { viewport: this.parent, type: 'follow' });
+            }
+        }
+    }]);
+
+    return Follow;
+}(Plugin);
+
+},{"./plugin":9}],7:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var utils = require('./utils');
+var Plugin = require('./plugin');
+
+module.exports = function (_Plugin) {
+    _inherits(MouseEdges, _Plugin);
+
+    /**
+     * Scroll viewport when mouse hovers near one of the edges.
+     * @private
+     * @param {Viewport} parent
+     * @param {object} [options]
+     * @param {number} [options.radius] distance from center of screen in screen pixels
+     * @param {number} [options.distance] distance from all sides in screen pixels
+     * @param {number} [options.top] alternatively, set top distance (leave unset for no top scroll)
+     * @param {number} [options.bottom] alternatively, set bottom distance (leave unset for no top scroll)
+     * @param {number} [options.left] alternatively, set left distance (leave unset for no top scroll)
+     * @param {number} [options.right] alternatively, set right distance (leave unset for no top scroll)
+     * @param {number} [options.speed=8] speed in pixels/frame to scroll viewport
+     * @param {boolean} [options.reverse] reverse direction of scroll
+     * @param {boolean} [options.noDecelerate] don't use decelerate plugin even if it's installed
+     * @param {boolean} [options.linear] if using radius, use linear movement (+/- 1, +/- 1) instead of angled movement (Math.cos(angle from center), Math.sin(angle from center))
+     *
+     * @event mouse-edge-start(Viewport) emitted when mouse-edge starts
+     * @event mouse-edge-end(Viewport) emitted when mouse-edge ends
+     */
+    function MouseEdges(parent, options) {
+        _classCallCheck(this, MouseEdges);
+
+        var _this = _possibleConstructorReturn(this, (MouseEdges.__proto__ || Object.getPrototypeOf(MouseEdges)).call(this, parent));
+
+        options = options || {};
+        _this.options = options;
+        _this.reverse = options.reverse ? 1 : -1;
+        _this.noDecelerate = options.noDecelerate;
+        _this.linear = options.linear;
+        _this.radiusSquared = Math.pow(options.radius, 2);
+        _this.resize();
+        _this.speed = options.speed || 8;
+        return _this;
+    }
+
+    _createClass(MouseEdges, [{
+        key: 'resize',
+        value: function resize() {
+            var options = this.options;
+            var distance = options.distance;
+            if (utils.exists(distance)) {
+                this.left = distance;
+                this.top = distance;
+                this.right = window.innerWidth - distance;
+                this.bottom = window.innerHeight - distance;
+            } else if (!this.radius) {
+                this.left = utils.exists(options.left) ? options.left : null;
+                this.top = utils.exists(options.top) ? options.top : null;
+                this.right = utils.exists(options.right) ? window.innerWidth - options.right : null;
+                this.bottom = utils.exists(options.bottom) ? window.innerHeight - options.bottom : null;
+            }
+        }
+    }, {
+        key: 'down',
+        value: function down() {
+            this.horizontal = this.vertical = null;
+        }
+    }, {
+        key: 'move',
+        value: function move(e) {
+            if (e.data.identifier !== 'MOUSE' || e.data.buttons !== 0) {
+                return;
+            }
+            var x = e.data.global.x;
+            var y = e.data.global.y;
+
+            if (this.radiusSquared) {
+                var center = this.parent.toScreen(this.parent.center);
+                var distance = Math.pow(center.x - x, 2) + Math.pow(center.y - y, 2);
+                if (distance >= this.radiusSquared) {
+                    var angle = Math.atan2(center.y - y, center.x - x);
+                    if (this.linear) {
+                        this.horizontal = Math.round(Math.cos(angle)) * this.speed * this.reverse * (60 / 1000);
+                        this.vertical = Math.round(Math.sin(angle)) * this.speed * this.reverse * (60 / 1000);
+                    } else {
+                        this.horizontal = Math.cos(angle) * this.speed * this.reverse * (60 / 1000);
+                        this.vertical = Math.sin(angle) * this.speed * this.reverse * (60 / 1000);
+                    }
+                } else {
+                    if (this.horizontal) {
+                        this.decelerateHorizontal();
+                    }
+                    if (this.vertical) {
+                        this.decelerateVertical();
+                    }
+                    this.horizontal = this.vertical = 0;
+                }
+            } else {
+                if (utils.exists(this.left) && x < this.left) {
+                    this.horizontal = 1 * this.reverse * this.speed * (60 / 1000);
+                } else if (utils.exists(this.right) && x > this.right) {
+                    this.horizontal = -1 * this.reverse * this.speed * (60 / 1000);
+                } else {
+                    this.decelerateHorizontal();
+                    this.horizontal = 0;
+                }
+                if (utils.exists(this.top) && y < this.top) {
+                    this.vertical = 1 * this.reverse * this.speed * (60 / 1000);
+                } else if (utils.exists(this.bottom) && y > this.bottom) {
+                    this.vertical = -1 * this.reverse * this.speed * (60 / 1000);
+                } else {
+                    this.decelerateVertical();
+                    this.vertical = 0;
+                }
+            }
+        }
+    }, {
+        key: 'decelerateHorizontal',
+        value: function decelerateHorizontal() {
+            var decelerate = this.parent.plugins['decelerate'];
+            if (this.horizontal && decelerate && !this.noDecelerate) {
+                decelerate.activate({ x: this.horizontal * this.speed * this.reverse / (1000 / 60) });
+            }
+        }
+    }, {
+        key: 'decelerateVertical',
+        value: function decelerateVertical() {
+            var decelerate = this.parent.plugins['decelerate'];
+            if (this.vertical && decelerate && !this.noDecelerate) {
+                decelerate.activate({ y: this.vertical * this.speed * this.reverse / (1000 / 60) });
+            }
+        }
+    }, {
+        key: 'up',
+        value: function up() {
+            if (this.horizontal) {
+                this.decelerateHorizontal();
+            }
+            if (this.vertical) {
+                this.decelerateVertical();
+            }
+            this.horizontal = this.vertical = null;
+        }
+    }, {
+        key: 'update',
+        value: function update() {
+            if (this.paused) {
+                return;
+            }
+
+            if (this.horizontal || this.vertical) {
+                var center = this.parent.center;
+                if (this.horizontal) {
+                    center.x += this.horizontal * this.speed;
+                }
+                if (this.vertical) {
+                    center.y += this.vertical * this.speed;
+                }
+                this.parent.moveCenter(center);
+                this.parent.emit('moved', { viewport: this.parent, type: 'mouse-edges' });
+            }
+        }
+    }]);
+
+    return MouseEdges;
+}(Plugin);
+
+},{"./plugin":9,"./utils":12}],8:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Plugin = require('./plugin');
+
+module.exports = function (_Plugin) {
+    _inherits(Pinch, _Plugin);
+
+    /**
+     * @private
+     * @param {Viewport} parent
+     * @param {object} [options]
+     * @param {boolean} [options.noDrag] disable two-finger dragging
+     * @param {number} [options.percent=1.0] percent to modify pinch speed
+     * @param {PIXI.Point} [options.center] place this point at center during zoom instead of center of two fingers
+     */
+    function Pinch(parent, options) {
+        _classCallCheck(this, Pinch);
+
+        var _this = _possibleConstructorReturn(this, (Pinch.__proto__ || Object.getPrototypeOf(Pinch)).call(this, parent));
+
+        options = options || {};
+        _this.percent = options.percent || 1.0;
+        _this.noDrag = options.noDrag;
+        _this.center = options.center;
+        return _this;
+    }
+
+    _createClass(Pinch, [{
+        key: 'down',
+        value: function down() {
+            if (this.parent.countDownPointers() >= 2) {
+                this.active = true;
+            }
+        }
+    }, {
+        key: 'move',
+        value: function move(e) {
+            if (this.paused || !this.active) {
+                return;
+            }
+
+            var x = e.data.global.x;
+            var y = e.data.global.y;
+
+            var pointers = this.parent.getTouchPointers();
+            if (pointers.length >= 2) {
+                var first = pointers[0];
+                var second = pointers[1];
+                var last = first.last && second.last ? Math.sqrt(Math.pow(second.last.x - first.last.x, 2) + Math.pow(second.last.y - first.last.y, 2)) : null;
+                if (first.pointerId === e.data.pointerId) {
+                    first.last = { x: x, y: y, data: e.data };
+                } else if (second.pointerId === e.data.pointerId) {
+                    second.last = { x: x, y: y, data: e.data };
+                }
+                if (last) {
+                    var oldPoint = void 0;
+                    var point = { x: first.last.x + (second.last.x - first.last.x) / 2, y: first.last.y + (second.last.y - first.last.y) / 2 };
+                    if (!this.center) {
+                        oldPoint = this.parent.toLocal(point);
+                    }
+                    var dist = Math.sqrt(Math.pow(second.last.x - first.last.x, 2) + Math.pow(second.last.y - first.last.y, 2));
+                    var change = (dist - last) / this.parent.screenWidth * this.parent.scale.x * this.percent;
+                    this.parent.scale.x += change;
+                    this.parent.scale.y += change;
+                    this.parent.emit('zoomed', { viewport: this.parent, type: 'pinch' });
+                    var clamp = this.parent.plugins['clamp-zoom'];
+                    if (clamp) {
+                        clamp.clamp();
+                    }
+                    if (this.center) {
+                        this.parent.moveCenter(this.center);
+                    } else {
+                        var newPoint = this.parent.toGlobal(oldPoint);
+                        this.parent.x += point.x - newPoint.x;
+                        this.parent.y += point.y - newPoint.y;
+                        this.parent.emit('moved', { viewport: this.parent, type: 'pinch' });
+                    }
+                    if (!this.noDrag && this.lastCenter) {
+                        this.parent.x += point.x - this.lastCenter.x;
+                        this.parent.y += point.y - this.lastCenter.y;
+                        this.parent.emit('moved', { viewport: this.parent, type: 'pinch' });
+                    }
+                    this.lastCenter = point;
+                    this.moved = true;
+                } else {
+                    if (!this.pinching) {
+                        this.parent.emit('pinch-start', this.parent);
+                        this.pinching = true;
+                    }
+                }
+                this.parent.dirty = true;
+            }
+        }
+    }, {
+        key: 'up',
+        value: function up() {
+            if (this.pinching) {
+                if (this.parent.touches.length <= 1) {
+                    this.active = false;
+                    this.lastCenter = null;
+                    this.pinching = false;
+                    this.moved = false;
+                    this.parent.emit('pinch-end', this.parent);
+                }
+            }
+        }
+    }]);
+
+    return Pinch;
+}(Plugin);
+
+},{"./plugin":9}],9:[function(require,module,exports){
+"use strict";
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+module.exports = function () {
+    function Plugin(parent) {
+        _classCallCheck(this, Plugin);
+
+        this.parent = parent;
+        this.paused = false;
+    }
+
+    _createClass(Plugin, [{
+        key: "down",
+        value: function down() {}
+    }, {
+        key: "move",
+        value: function move() {}
+    }, {
+        key: "up",
+        value: function up() {}
+    }, {
+        key: "wheel",
+        value: function wheel() {}
+    }, {
+        key: "update",
+        value: function update() {}
+    }, {
+        key: "resize",
+        value: function resize() {}
+    }, {
+        key: "reset",
+        value: function reset() {}
+    }, {
+        key: "pause",
+        value: function pause() {
+            this.paused = true;
+        }
+    }, {
+        key: "resume",
+        value: function resume() {
+            this.paused = false;
+        }
+    }]);
+
+    return Plugin;
+}();
+
+},{}],10:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Plugin = require('./plugin');
+var utils = require('./utils');
+
+module.exports = function (_Plugin) {
+    _inherits(SnapZoom, _Plugin);
+
+    /**
+     * @private
+     * @param {Viewport} parent
+     * @param {object} [options]
+     * @param {number} [options.width] the desired width to snap (to maintain aspect ratio, choose only width or height)
+     * @param {number} [options.height] the desired height to snap (to maintain aspect ratio, choose only width or height)
+     * @param {number} [options.time=1000]
+     * @param {string|function} [options.ease=easeInOutSine] ease function or name (see http://easings.net/ for supported names)
+     * @param {PIXI.Point} [options.center] place this point at center during zoom instead of center of the viewport
+     * @param {boolean} [options.interrupt=true] pause snapping with any user input on the viewport
+     * @param {boolean} [options.removeOnComplete] removes this plugin after snapping is complete
+     * @param {boolean} [options.removeOnInterrupt] removes this plugin if interrupted by any user input
+     * @param {boolean} [options.forceStart] starts the snap immediately regardless of whether the viewport is at the desired zoom
+     * @param {boolean} [options.noMove] zoom but do not move
+     *
+     * @event snap-zoom-start(Viewport) emitted each time a fit animation starts
+     * @event snap-zoom-end(Viewport) emitted each time fit reaches its target
+     * @event snap-zoom-end(Viewport) emitted each time fit reaches its target
+     */
+    function SnapZoom(parent, options) {
+        _classCallCheck(this, SnapZoom);
+
+        var _this = _possibleConstructorReturn(this, (SnapZoom.__proto__ || Object.getPrototypeOf(SnapZoom)).call(this, parent));
+
+        options = options || {};
+        _this.width = options.width;
+        _this.height = options.height;
+        if (_this.width > 0) {
+            _this.x_scale = parent._screenWidth / _this.width;
+        }
+        if (_this.height > 0) {
+            _this.y_scale = parent._screenHeight / _this.height;
+        }
+        _this.xIndependent = utils.exists(_this.x_scale);
+        _this.yIndependent = utils.exists(_this.y_scale);
+        _this.x_scale = _this.xIndependent ? _this.x_scale : _this.y_scale;
+        _this.y_scale = _this.yIndependent ? _this.y_scale : _this.x_scale;
+
+        _this.time = utils.defaults(options.time, 1000);
+        _this.ease = utils.ease(options.ease, 'easeInOutSine');
+        _this.center = options.center;
+        _this.noMove = options.noMove;
+        _this.stopOnResize = options.stopOnResize;
+        _this.removeOnInterrupt = options.removeOnInterrupt;
+        _this.removeOnComplete = utils.defaults(options.removeOnComplete, true);
+        _this.interrupt = utils.defaults(options.interrupt, true);
+        if (_this.time === 0) {
+            parent.container.scale.x = _this.x_scale;
+            parent.container.scale.y = _this.y_scale;
+            if (_this.removeOnComplete) {
+                _this.parent.removePlugin('snap-zoom');
+            }
+        } else if (options.forceStart) {
+            _this.createSnapping();
+        }
+        return _this;
+    }
+
+    _createClass(SnapZoom, [{
+        key: 'createSnapping',
+        value: function createSnapping() {
+            var scale = this.parent.scale;
+            this.snapping = { time: 0, startX: scale.x, startY: scale.y, deltaX: this.x_scale - scale.x, deltaY: this.y_scale - scale.y };
+            this.parent.emit('snap-zoom-start', this.parent);
+        }
+    }, {
+        key: 'resize',
+        value: function resize() {
+            this.snapping = null;
+
+            if (this.width > 0) {
+                this.x_scale = this.parent._screenWidth / this.width;
+            }
+            if (this.height > 0) {
+                this.y_scale = this.parent._screenHeight / this.height;
+            }
+            this.x_scale = this.xIndependent ? this.x_scale : this.y_scale;
+            this.y_scale = this.yIndependent ? this.y_scale : this.x_scale;
+        }
+    }, {
+        key: 'reset',
+        value: function reset() {
+            this.snapping = null;
+        }
+    }, {
+        key: 'wheel',
+        value: function wheel() {
+            if (this.removeOnInterrupt) {
+                this.parent.removePlugin('snap-zoom');
+            }
+        }
+    }, {
+        key: 'down',
+        value: function down() {
+            if (this.removeOnInterrupt) {
+                this.parent.removePlugin('snap-zoom');
+            } else if (this.interrupt) {
+                this.snapping = null;
+            }
+        }
+    }, {
+        key: 'update',
+        value: function update(elapsed) {
+            if (this.paused) {
+                return;
+            }
+            if (this.interrupt && this.parent.countDownPointers() !== 0) {
+                return;
+            }
+
+            var oldCenter = void 0;
+            if (!this.center && !this.noMove) {
+                oldCenter = this.parent.center;
+            }
+            if (!this.snapping) {
+                if (this.parent.scale.x !== this.x_scale || this.parent.scale.y !== this.y_scale) {
+                    this.createSnapping();
+                }
+            } else if (this.snapping) {
+                var snapping = this.snapping;
+                snapping.time += elapsed;
+                if (snapping.time >= this.time) {
+                    this.parent.scale.set(this.x_scale, this.y_scale);
+                    if (this.removeOnComplete) {
+                        this.parent.removePlugin('snap-zoom');
+                    }
+                    this.parent.emit('snap-zoom-end', this.parent);
+                    this.snapping = null;
+                } else {
+                    var _snapping = this.snapping;
+                    this.parent.scale.x = this.ease(_snapping.time, _snapping.startX, _snapping.deltaX, this.time);
+                    this.parent.scale.y = this.ease(_snapping.time, _snapping.startY, _snapping.deltaY, this.time);
+                }
+                var clamp = this.parent.plugins['clamp-zoom'];
+                if (clamp) {
+                    clamp.clamp();
+                }
+                if (!this.noMove) {
+                    if (!this.center) {
+                        this.parent.moveCenter(oldCenter);
+                    } else {
+                        this.parent.moveCenter(this.center);
+                    }
+                }
+            }
+        }
+    }, {
+        key: 'resume',
+        value: function resume() {
+            this.snapping = null;
+            _get(SnapZoom.prototype.__proto__ || Object.getPrototypeOf(SnapZoom.prototype), 'resume', this).call(this);
+        }
+    }]);
+
+    return SnapZoom;
+}(Plugin);
+
+},{"./plugin":9,"./utils":12}],11:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Plugin = require('./plugin');
+var utils = require('./utils');
+
+module.exports = function (_Plugin) {
+    _inherits(Snap, _Plugin);
+
+    /**
+     * @private
+     * @param {Viewport} parent
+     * @param {number} x
+     * @param {number} y
+     * @param {object} [options]
+     * @param {boolean} [options.topLeft] snap to the top-left of viewport instead of center
+     * @param {number} [options.friction=0.8] friction/frame to apply if decelerate is active
+     * @param {number} [options.time=1000]
+     * @param {string|function} [options.ease=easeInOutSine] ease function or name (see http://easings.net/ for supported names)
+     * @param {boolean} [options.interrupt=true] pause snapping with any user input on the viewport
+     * @param {boolean} [options.removeOnComplete] removes this plugin after snapping is complete
+     * @param {boolean} [options.removeOnInterrupt] removes this plugin if interrupted by any user input
+     * @param {boolean} [options.forceStart] starts the snap immediately regardless of whether the viewport is at the desired location
+     *
+     * @event snap-start(Viewport) emitted each time a snap animation starts
+     * @event snap-restart(Viewport) emitted each time a snap resets because of a change in viewport size
+     * @event snap-end(Viewport) emitted each time snap reaches its target
+     * @event snap-remove(Viewport) emitted if snap plugin is removed
+     */
+    function Snap(parent, x, y, options) {
+        _classCallCheck(this, Snap);
+
+        var _this = _possibleConstructorReturn(this, (Snap.__proto__ || Object.getPrototypeOf(Snap)).call(this, parent));
+
+        options = options || {};
+        _this.friction = options.friction || 0.8;
+        _this.time = options.time || 1000;
+        _this.ease = utils.ease(options.ease, 'easeInOutSine');
+        _this.x = x;
+        _this.y = y;
+        _this.topLeft = options.topLeft;
+        _this.interrupt = utils.defaults(options.interrupt, true);
+        _this.removeOnComplete = options.removeOnComplete;
+        _this.removeOnInterrupt = options.removeOnInterrupt;
+        if (options.forceStart) {
+            _this.startEase();
+        }
+        return _this;
+    }
+
+    _createClass(Snap, [{
+        key: 'snapStart',
+        value: function snapStart() {
+            this.percent = 0;
+            this.snapping = { time: 0 };
+            var current = this.topLeft ? this.parent.corner : this.parent.center;
+            this.deltaX = this.x - current.x;
+            this.deltaY = this.y - current.y;
+            this.startX = current.x;
+            this.startY = current.y;
+            this.parent.emit('snap-start', this.parent);
+        }
+    }, {
+        key: 'wheel',
+        value: function wheel() {
+            if (this.removeOnInterrupt) {
+                this.parent.removePlugin('snap');
+            }
+        }
+    }, {
+        key: 'down',
+        value: function down() {
+            if (this.removeOnInterrupt) {
+                this.parent.removePlugin('snap');
+            } else if (this.interrupt) {
+                this.snapping = null;
+            }
+        }
+    }, {
+        key: 'up',
+        value: function up() {
+            if (this.parent.countDownPointers() === 0) {
+                var decelerate = this.parent.plugins['decelerate'];
+                if (decelerate && (decelerate.x || decelerate.y)) {
+                    decelerate.percentChangeX = decelerate.percentChangeY = this.friction;
+                }
+            }
+        }
+    }, {
+        key: 'update',
+        value: function update(elapsed) {
+            if (this.paused) {
+                return;
+            }
+            if (this.interrupt && this.parent.countDownPointers() !== 0) {
+                return;
+            }
+            if (!this.snapping) {
+                var current = this.topLeft ? this.parent.corner : this.parent.center;
+                if (current.x !== this.x || current.y !== this.y) {
+                    this.snapStart();
+                }
+            } else {
+                var snapping = this.snapping;
+                snapping.time += elapsed;
+                var finished = void 0,
+                    x = void 0,
+                    y = void 0;
+                if (snapping.time > this.time) {
+                    finished = true;
+                    x = this.startX + this.deltaX;
+                    y = this.startY + this.deltaY;
+                } else {
+                    var percent = this.ease(snapping.time, 0, 1, this.time);
+                    x = this.startX + this.deltaX * percent;
+                    y = this.startY + this.deltaY * percent;
+                }
+                if (this.topLeft) {
+                    this.parent.moveCorner(x, y);
+                } else {
+                    this.parent.moveCenter(x, y);
+                }
+                this.parent.emit('moved', { viewport: this.parent, type: 'snap' });
+                if (finished) {
+                    if (this.removeOnComplete) {
+                        this.parent.removePlugin('snap');
+                    }
+                    this.parent.emit('snap-end', this.parent);
+                    this.snapping = null;
+                }
+            }
+        }
+    }]);
+
+    return Snap;
+}(Plugin);
+
+},{"./plugin":9,"./utils":12}],12:[function(require,module,exports){
+'use strict';
+
+var Penner = require('penner');
+
+function exists(a) {
+    return a !== undefined && a !== null;
+}
+
+function defaults(a, defaults) {
+    return a !== undefined && a !== null ? a : defaults;
+}
+
+/**
+ * @param {(function|string)} [ease]
+ * @param {string} defaults for pennr equation
+ * @private
+ * @returns {function} correct penner equation
+ */
+function ease(ease, defaults) {
+    if (!exists(ease)) {
+        return Penner[defaults];
+    } else if (typeof ease === 'function') {
+        return ease;
+    } else if (typeof ease === 'string') {
+        return Penner[ease];
+    }
+}
+
+module.exports = {
+    exists: exists,
+    defaults: defaults,
+    ease: ease
+};
+
+},{"penner":15}],13:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var utils = require('./utils');
+var Drag = require('./drag');
+var Pinch = require('./pinch');
+var Clamp = require('./clamp');
+var ClampZoom = require('./clamp-zoom');
+var Decelerate = require('./decelerate');
+var Bounce = require('./bounce');
+var Snap = require('./snap');
+var SnapZoom = require('./snap-zoom');
+var Follow = require('./follow');
+var Wheel = require('./wheel');
+var MouseEdges = require('./mouse-edges');
+
+var PLUGIN_ORDER = ['drag', 'pinch', 'wheel', 'follow', 'mouse-edges', 'decelerate', 'bounce', 'snap-zoom', 'clamp-zoom', 'snap', 'clamp'];
+
+var Viewport = function (_PIXI$Container) {
+    _inherits(Viewport, _PIXI$Container);
+
+    /**
+     * @extends PIXI.Container
+     * @extends EventEmitter
+     * @param {object} [options]
+     * @param {number} [options.screenWidth=window.innerWidth]
+     * @param {number} [options.screenHeight=window.innerHeight]
+     * @param {number} [options.worldWidth=this.width]
+     * @param {number} [options.worldHeight=this.height]
+     * @param {number} [options.threshold = 5] number of pixels to move to trigger an input event (e.g., drag, pinch)
+     * @param {(PIXI.Rectangle|PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.RoundedRectangle)} [options.forceHitArea] change the default hitArea from world size to a new value
+     * @param {PIXI.ticker.Ticker} [options.ticker=PIXI.ticker.shared] use this PIXI.ticker for updates
+     * @param {PIXI.InteractionManager} [options.interaction=null] InteractionManager, available from instantiated WebGLRenderer/CanvasRenderer.plugins.interaction - used to calculate pointer postion relative to canvas location on screen
+     * @param {HTMLElement} [options.divWheel=document.body] div to attach the wheel event
+     * @fires clicked
+     * @fires drag-start
+     * @fires drag-end
+     * @fires drag-remove
+     * @fires pinch-start
+     * @fires pinch-end
+     * @fires pinch-remove
+     * @fires snap-start
+     * @fires snap-end
+     * @fires snap-remove
+     * @fires snap-zoom-start
+     * @fires snap-zoom-end
+     * @fires snap-zoom-remove
+     * @fires bounce-x-start
+     * @fires bounce-x-end
+     * @fires bounce-y-start
+     * @fires bounce-y-end
+     * @fires bounce-remove
+     * @fires wheel
+     * @fires wheel-remove
+     * @fires wheel-scroll
+     * @fires wheel-scroll-remove
+     * @fires mouse-edge-start
+     * @fires mouse-edge-end
+     * @fires mouse-edge-remove
+     * @fires moved
+     */
+    function Viewport(options) {
+        _classCallCheck(this, Viewport);
+
+        options = options || {};
+
+        var _this = _possibleConstructorReturn(this, (Viewport.__proto__ || Object.getPrototypeOf(Viewport)).call(this));
+
+        _this.plugins = {};
+        _this.pluginsList = [];
+        _this._screenWidth = options.screenWidth;
+        _this._screenHeight = options.screenHeight;
+        _this._worldWidth = options.worldWidth;
+        _this._worldHeight = options.worldHeight;
+        _this.hitAreaFullScreen = utils.defaults(options.hitAreaFullScreen, true);
+        _this.forceHitArea = options.forceHitArea;
+        _this.threshold = utils.defaults(options.threshold, 5);
+        _this.interaction = options.interaction || null;
+        _this.div = options.divWheel || document.body;
+        _this.listeners(_this.div);
+
+        /**
+         * active touch point ids on the viewport
+         * @type {number[]}
+         * @readonly
+         */
+        _this.touches = [];
+
+        _this.ticker = options.ticker || PIXI.ticker.shared;
+        _this.tickerFunction = function () {
+            return _this.update();
+        };
+        _this.ticker.add(_this.tickerFunction);
+        return _this;
+    }
+
+    /**
+     * removes all event listeners from viewport
+     * (useful for cleanup of wheel and ticker events when removing viewport)
+     */
+
+
+    _createClass(Viewport, [{
+        key: 'removeListeners',
+        value: function removeListeners() {
+            this.ticker.remove(this.tickerFunction);
+            this.div.removeEventListener('wheel', this.wheelFunction);
+        }
+
+        /**
+         * overrides PIXI.Container's destroy to also remove the 'wheel' and PIXI.Ticker listeners
+         */
+
+    }, {
+        key: 'destroy',
+        value: function destroy(options) {
+            _get(Viewport.prototype.__proto__ || Object.getPrototypeOf(Viewport.prototype), 'destroy', this).call(this, options);
+            this.removeListeners();
+        }
+
+        /**
+         * update animations
+         * @private
+         */
+
+    }, {
+        key: 'update',
+        value: function update() {
+            if (!this.pause) {
+                var _iteratorNormalCompletion = true;
+                var _didIteratorError = false;
+                var _iteratorError = undefined;
+
+                try {
+                    for (var _iterator = this.pluginsList[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                        var plugin = _step.value;
+
+                        plugin.update(this.ticker.elapsedMS);
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return) {
+                            _iterator.return();
+                        }
+                    } finally {
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+            }
+            if (!this.forceHitArea) {
+                this.hitArea.x = this.left;
+                this.hitArea.y = this.top;
+                this.hitArea.width = this.worldScreenWidth;
+                this.hitArea.height = this.worldScreenHeight;
+            }
+        }
+
+        /**
+         * use this to set screen and world sizes--needed for pinch/wheel/clamp/bounce
+         * @param {number} screenWidth
+         * @param {number} screenHeight
+         * @param {number} [worldWidth]
+         * @param {number} [worldHeight]
+         */
+
+    }, {
+        key: 'resize',
+        value: function resize(screenWidth, screenHeight, worldWidth, worldHeight) {
+            this._screenWidth = screenWidth || window.innerWidth;
+            this._screenHeight = screenHeight || window.innerHeight;
+            this._worldWidth = worldWidth;
+            this._worldHeight = worldHeight;
+            this.resizePlugins();
+        }
+
+        /**
+         * called after a worldWidth/Height change
+         * @private
+         */
+
+    }, {
+        key: 'resizePlugins',
+        value: function resizePlugins() {
+            var _iteratorNormalCompletion2 = true;
+            var _didIteratorError2 = false;
+            var _iteratorError2 = undefined;
+
+            try {
+                for (var _iterator2 = this.pluginsList[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                    var plugin = _step2.value;
+
+                    plugin.resize();
+                }
+            } catch (err) {
+                _didIteratorError2 = true;
+                _iteratorError2 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                        _iterator2.return();
+                    }
+                } finally {
+                    if (_didIteratorError2) {
+                        throw _iteratorError2;
+                    }
+                }
+            }
+        }
+
+        /**
+         * screen width in screen pixels
+         * @type {number}
+         */
+
+    }, {
+        key: 'listeners',
+
+
+        /**
+         * add input listeners
+         * @private
+         */
+        value: function listeners(div) {
+            var _this2 = this;
+
+            this.interactive = true;
+            if (!this.forceHitArea) {
+                this.hitArea = new PIXI.Rectangle(0, 0, this.worldWidth, this.worldHeight);
+            }
+            this.on('pointerdown', this.down);
+            this.on('pointermove', this.move);
+            this.on('pointerup', this.up);
+            this.on('pointerupoutside', this.up);
+            this.on('pointercancel', this.up);
+            this.on('pointerout', this.up);
+            this.wheelFunction = function (e) {
+                return _this2.handleWheel(e);
+            };
+            div.addEventListener('wheel', this.wheelFunction);
+            this.leftDown = false;
+        }
+
+        /**
+         * handle down events
+         * @private
+         */
+
+    }, {
+        key: 'down',
+        value: function down(e) {
+            if (this.pause) {
+                return;
+            }
+            if (e.data.pointerType === 'mouse') {
+                if (e.data.originalEvent.button == 0) {
+                    this.leftDown = true;
+                }
+            } else {
+                this.touches.push(e.data.pointerId);
+            }
+
+            if (this.countDownPointers() === 1) {
+                this.last = { x: e.data.global.x, y: e.data.global.y
+
+                    // clicked event does not fire if viewport is decelerating or bouncing
+                };var decelerate = this.plugins['decelerate'];
+                var bounce = this.plugins['bounce'];
+                if ((!decelerate || !decelerate.x && !decelerate.y) && (!bounce || !bounce.toX && !bounce.toY)) {
+                    this.clickedAvailable = true;
+                }
+            } else {
+                this.clickedAvailable = false;
+            }
+
+            var _iteratorNormalCompletion3 = true;
+            var _didIteratorError3 = false;
+            var _iteratorError3 = undefined;
+
+            try {
+                for (var _iterator3 = this.pluginsList[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                    var plugin = _step3.value;
+
+                    plugin.down(e);
+                }
+            } catch (err) {
+                _didIteratorError3 = true;
+                _iteratorError3 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                        _iterator3.return();
+                    }
+                } finally {
+                    if (_didIteratorError3) {
+                        throw _iteratorError3;
+                    }
+                }
+            }
+        }
+
+        /**
+         * whether change exceeds threshold
+         * @private
+         * @param {number} change
+         */
+
+    }, {
+        key: 'checkThreshold',
+        value: function checkThreshold(change) {
+            if (Math.abs(change) >= this.threshold) {
+                return true;
+            }
+            return false;
+        }
+
+        /**
+         * handle move events
+         * @private
+         */
+
+    }, {
+        key: 'move',
+        value: function move(e) {
+            if (this.pause) {
+                return;
+            }
+
+            var _iteratorNormalCompletion4 = true;
+            var _didIteratorError4 = false;
+            var _iteratorError4 = undefined;
+
+            try {
+                for (var _iterator4 = this.pluginsList[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                    var plugin = _step4.value;
+
+                    plugin.move(e);
+                }
+            } catch (err) {
+                _didIteratorError4 = true;
+                _iteratorError4 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                        _iterator4.return();
+                    }
+                } finally {
+                    if (_didIteratorError4) {
+                        throw _iteratorError4;
+                    }
+                }
+            }
+
+            if (this.clickedAvailable) {
+                var distX = e.data.global.x - this.last.x;
+                var distY = e.data.global.y - this.last.y;
+                if (this.checkThreshold(distX) || this.checkThreshold(distY)) {
+                    this.clickedAvailable = false;
+                }
+            }
+        }
+
+        /**
+         * handle up events
+         * @private
+         */
+
+    }, {
+        key: 'up',
+        value: function up(e) {
+            if (this.pause) {
+                return;
+            }
+
+            if (e.data.originalEvent instanceof MouseEvent && e.data.originalEvent.button == 0) {
+                this.leftDown = false;
+            }
+
+            if (e.data.pointerType !== 'mouse') {
+                for (var i = 0; i < this.touches.length; i++) {
+                    if (this.touches[i] === e.data.pointerId) {
+                        this.touches.splice(i, 1);
+                        break;
+                    }
+                }
+            }
+
+            var _iteratorNormalCompletion5 = true;
+            var _didIteratorError5 = false;
+            var _iteratorError5 = undefined;
+
+            try {
+                for (var _iterator5 = this.pluginsList[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+                    var plugin = _step5.value;
+
+                    plugin.up(e);
+                }
+            } catch (err) {
+                _didIteratorError5 = true;
+                _iteratorError5 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion5 && _iterator5.return) {
+                        _iterator5.return();
+                    }
+                } finally {
+                    if (_didIteratorError5) {
+                        throw _iteratorError5;
+                    }
+                }
+            }
+
+            if (this.clickedAvailable && this.countDownPointers() === 0) {
+                this.emit('clicked', { screen: this.last, world: this.toWorld(this.last), viewport: this });
+                this.clickedAvailable = false;
+            }
+        }
+
+        /**
+         * gets pointer position if this.interaction is set
+         * @param {UIEvent} evt
+         * @private
+         */
+
+    }, {
+        key: 'getPointerPosition',
+        value: function getPointerPosition(evt) {
+            var point = new PIXI.Point();
+            if (this.interaction) {
+                this.interaction.mapPositionToPoint(point, evt.clientX, evt.clientY);
+            } else {
+                point.x = evt.clientX;
+                point.y = evt.clientY;
+            }
+            return point;
+        }
+
+        /**
+         * handle wheel events
+         * @private
+         */
+
+    }, {
+        key: 'handleWheel',
+        value: function handleWheel(e) {
+            if (this.pause) {
+                return;
+            }
+
+            // only handle wheel events where the mouse is over the viewport
+            var point = this.toLocal(this.getPointerPosition(e));
+            if (this.left <= point.x && point.x <= this.right && this.top <= point.y && point.y <= this.bottom) {
+                var result = void 0;
+                var _iteratorNormalCompletion6 = true;
+                var _didIteratorError6 = false;
+                var _iteratorError6 = undefined;
+
+                try {
+                    for (var _iterator6 = this.pluginsList[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+                        var plugin = _step6.value;
+
+                        if (plugin.wheel(e)) {
+                            result = true;
+                        }
+                    }
+                } catch (err) {
+                    _didIteratorError6 = true;
+                    _iteratorError6 = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion6 && _iterator6.return) {
+                            _iterator6.return();
+                        }
+                    } finally {
+                        if (_didIteratorError6) {
+                            throw _iteratorError6;
+                        }
+                    }
+                }
+
+                return result;
+            }
+        }
+
+        /**
+         * change coordinates from screen to world
+         * @param {number|PIXI.Point} x
+         * @param {number} [y]
+         * @returns {PIXI.Point}
+         */
+
+    }, {
+        key: 'toWorld',
+        value: function toWorld() {
+            if (arguments.length === 2) {
+                var x = arguments[0];
+                var y = arguments[1];
+                return this.toLocal({ x: x, y: y });
+            } else {
+                return this.toLocal(arguments[0]);
+            }
+        }
+
+        /**
+         * change coordinates from world to screen
+         * @param {number|PIXI.Point} x
+         * @param {number} [y]
+         * @returns {PIXI.Point}
+         */
+
+    }, {
+        key: 'toScreen',
+        value: function toScreen() {
+            if (arguments.length === 2) {
+                var x = arguments[0];
+                var y = arguments[1];
+                return this.toGlobal({ x: x, y: y });
+            } else {
+                var point = arguments[0];
+                return this.toGlobal(point);
+            }
+        }
+
+        /**
+         * screen width in world coordinates
+         * @type {number}
+         * @readonly
+         */
+
+    }, {
+        key: 'moveCenter',
+
+
+        /**
+         * move center of viewport to point
+         * @param {(number|PIXI.PointLike)} x or point
+         * @param {number} [y]
+         * @return {Viewport} this
+         */
+        value: function moveCenter() /*x, y | PIXI.Point*/{
+            var x = void 0,
+                y = void 0;
+            if (!isNaN(arguments[0])) {
+                x = arguments[0];
+                y = arguments[1];
+            } else {
+                x = arguments[0].x;
+                y = arguments[0].y;
+            }
+            this.position.set((this.worldScreenWidth / 2 - x) * this.scale.x, (this.worldScreenHeight / 2 - y) * this.scale.y);
+            this._reset();
+            return this;
+        }
+
+        /**
+         * top-left corner
+         * @type {PIXI.PointLike}
+         */
+
+    }, {
+        key: 'moveCorner',
+
+
+        /**
+         * move viewport's top-left corner; also clamps and resets decelerate and bounce (as needed)
+         * @param {number|PIXI.Point} x|point
+         * @param {number} y
+         * @return {Viewport} this
+         */
+        value: function moveCorner() /*x, y | point*/{
+            if (arguments.length === 1) {
+                this.position.set(-arguments[0].x * this.scale.x, -arguments[0].y * this.scale.y);
+            } else {
+                this.position.set(-arguments[0] * this.scale.x, -arguments[1] * this.scale.y);
+            }
+            this._reset();
+            return this;
+        }
+
+        /**
+         * change zoom so the width fits in the viewport
+         * @param {number} [width=this._worldWidth] in world coordinates
+         * @param {boolean} [center] maintain the same center
+         * @return {Viewport} this
+         */
+
+    }, {
+        key: 'fitWidth',
+        value: function fitWidth(width, center) {
+            var save = void 0;
+            if (center) {
+                save = this.center;
+            }
+            width = width || this.worldWidth;
+            this.scale.x = this.screenWidth / width;
+            this.scale.y = this.scale.x;
+            if (center) {
+                this.moveCenter(save);
+            }
+            return this;
+        }
+
+        /**
+         * change zoom so the height fits in the viewport
+         * @param {number} [height=this._worldHeight] in world coordinates
+         * @param {boolean} [center] maintain the same center of the screen after zoom
+         * @return {Viewport} this
+         */
+
+    }, {
+        key: 'fitHeight',
+        value: function fitHeight(height, center) {
+            var save = void 0;
+            if (center) {
+                save = this.center;
+            }
+            height = height || this.worldHeight;
+            this.scale.y = this.screenHeight / height;
+            this.scale.x = this.scale.y;
+            if (center) {
+                this.moveCenter(save);
+            }
+            return this;
+        }
+
+        /**
+         * change zoom so it fits the entire world in the viewport
+         * @param {boolean} [center] maintain the same center of the screen after zoom
+         * @return {Viewport} this
+         */
+
+    }, {
+        key: 'fitWorld',
+        value: function fitWorld(center) {
+            var save = void 0;
+            if (center) {
+                save = this.center;
+            }
+            this.scale.x = this._screenWidth / this._worldWidth;
+            this.scale.y = this._screenHeight / this._worldHeight;
+            if (this.scale.x < this.scale.y) {
+                this.scale.y = this.scale.x;
+            } else {
+                this.scale.x = this.scale.y;
+            }
+            if (center) {
+                this.moveCenter(save);
+            }
+            return this;
+        }
+
+        /**
+         * change zoom so it fits the size or the entire world in the viewport
+         * @param {boolean} [center] maintain the same center of the screen after zoom
+         * @param {number} [width] desired width
+         * @param {number} [height] desired height
+         * @return {Viewport} this
+         */
+
+    }, {
+        key: 'fit',
+        value: function fit(center, width, height) {
+            var save = void 0;
+            if (center) {
+                save = this.center;
+            }
+            width = width || this.worldWidth;
+            height = height || this.worldHeight;
+            this.scale.x = this.screenWidth / width;
+            this.scale.y = this.screenHeight / height;
+            if (this.scale.x < this.scale.y) {
+                this.scale.y = this.scale.x;
+            } else {
+                this.scale.x = this.scale.y;
+            }
+            if (center) {
+                this.moveCenter(save);
+            }
+            return this;
+        }
+
+        /**
+         * zoom viewport by a certain percent (in both x and y direction)
+         * @param {number} percent change (e.g., 0.25 would increase a starting scale of 1.0 to 1.25)
+         * @param {boolean} [center] maintain the same center of the screen after zoom
+         * @return {Viewport} the viewport
+         */
+
+    }, {
+        key: 'zoomPercent',
+        value: function zoomPercent(percent, center) {
+            var save = void 0;
+            if (center) {
+                save = this.center;
+            }
+            var scale = this.scale.x + this.scale.x * percent;
+            this.scale.set(scale);
+            if (center) {
+                this.moveCenter(save);
+            }
+            return this;
+        }
+
+        /**
+         * zoom viewport by increasing/decreasing width by a certain number of pixels
+         * @param {number} change in pixels
+         * @param {boolean} [center] maintain the same center of the screen after zoom
+         * @return {Viewport} the viewport
+         */
+
+    }, {
+        key: 'zoom',
+        value: function zoom(change, center) {
+            this.fitWidth(change + this.worldScreenWidth, center);
+            return this;
+        }
+
+        /**
+         * @param {object} [options]
+         * @param {number} [options.width] the desired width to snap (to maintain aspect ratio, choose only width or height)
+         * @param {number} [options.height] the desired height to snap (to maintain aspect ratio, choose only width or height)
+         * @param {number} [options.time=1000]
+         * @param {string|function} [options.ease=easeInOutSine] ease function or name (see http://easings.net/ for supported names)
+         * @param {PIXI.Point} [options.center] place this point at center during zoom instead of center of the viewport
+         * @param {boolean} [options.interrupt=true] pause snapping with any user input on the viewport
+         * @param {boolean} [options.removeOnComplete] removes this plugin after snapping is complete
+         * @param {boolean} [options.removeOnInterrupt] removes this plugin if interrupted by any user input
+         * @param {boolean} [options.forceStart] starts the snap immediately regardless of whether the viewport is at the desired zoom
+         */
+
+    }, {
+        key: 'snapZoom',
+        value: function snapZoom(options) {
+            this.plugins['snap-zoom'] = new SnapZoom(this, options);
+            this.pluginsSort();
+            return this;
+        }
+
+        /**
+         * @private
+         * @typedef OutOfBounds
+         * @type {object}
+         * @property {boolean} left
+         * @property {boolean} right
+         * @property {boolean} top
+         * @property {boolean} bottom
+         */
+
+        /**
+         * is container out of world bounds
+         * @return {OutOfBounds}
+         * @private
+         */
+
+    }, {
+        key: 'OOB',
+        value: function OOB() {
+            var result = {};
+            result.left = this.left < 0;
+            result.right = this.right > this._worldWidth;
+            result.top = this.top < 0;
+            result.bottom = this.bottom > this._worldHeight;
+            result.cornerPoint = {
+                x: this._worldWidth * this.scale.x - this._screenWidth,
+                y: this._worldHeight * this.scale.y - this._screenHeight
+            };
+            return result;
+        }
+
+        /**
+         * world coordinates of the right edge of the screen
+         * @type {number}
+         */
+
+    }, {
+        key: 'countDownPointers',
+
+
+        /**
+         * count of mouse/touch pointers that are down on the viewport
+         * @private
+         * @return {number}
+         */
+        value: function countDownPointers() {
+            return (this.leftDown ? 1 : 0) + this.touches.length;
+        }
+
+        /**
+         * array of touch pointers that are down on the viewport
+         * @private
+         * @return {PIXI.InteractionTrackingData[]}
+         */
+
+    }, {
+        key: 'getTouchPointers',
+        value: function getTouchPointers() {
+            var results = [];
+            var pointers = this.trackedPointers;
+            for (var key in pointers) {
+                var pointer = pointers[key];
+                if (this.touches.indexOf(pointer.pointerId) !== -1) {
+                    results.push(pointer);
+                }
+            }
+            return results;
+        }
+
+        /**
+         * array of pointers that are down on the viewport
+         * @private
+         * @return {PIXI.InteractionTrackingData[]}
+         */
+
+    }, {
+        key: 'getPointers',
+        value: function getPointers() {
+            var results = [];
+            var pointers = this.trackedPointers;
+            for (var key in pointers) {
+                results.push(pointers[key]);
+            }
+            return results;
+        }
+
+        /**
+         * clamps and resets bounce and decelerate (as needed) after manually moving viewport
+         * @private
+         */
+
+    }, {
+        key: '_reset',
+        value: function _reset() {
+            if (this.plugins['bounce']) {
+                this.plugins['bounce'].reset();
+                this.plugins['bounce'].bounce();
+            }
+            if (this.plugins['decelerate']) {
+                this.plugins['decelerate'].reset();
+            }
+            if (this.plugins['snap']) {
+                this.plugins['snap'].reset();
+            }
+            if (this.plugins['clamp']) {
+                this.plugins['clamp'].update();
+            }
+            if (this.plugins['clamp-zoom']) {
+                this.plugins['clamp-zoom'].clamp();
+            }
+            this.dirty = true;
+        }
+
+        // PLUGINS
+
+        /**
+         * removes installed plugin
+         * @param {string} type of plugin (e.g., 'drag', 'pinch')
+         */
+
+    }, {
+        key: 'removePlugin',
+        value: function removePlugin(type) {
+            if (this.plugins[type]) {
+                this.plugins[type] = null;
+                this.emit(type + '-remove');
+                this.pluginsSort();
+            }
+        }
+
+        /**
+         * pause plugin
+         * @param {string} type of plugin (e.g., 'drag', 'pinch')
+         */
+
+    }, {
+        key: 'pausePlugin',
+        value: function pausePlugin(type) {
+            if (this.plugins[type]) {
+                this.plugins[type].pause();
+            }
+        }
+
+        /**
+         * resume plugin
+         * @param {string} type of plugin (e.g., 'drag', 'pinch')
+         */
+
+    }, {
+        key: 'resumePlugin',
+        value: function resumePlugin(type) {
+            if (this.plugins[type]) {
+                this.plugins[type].resume();
+            }
+        }
+
+        /**
+         * sort plugins for updates
+         * @private
+         */
+
+    }, {
+        key: 'pluginsSort',
+        value: function pluginsSort() {
+            this.pluginsList = [];
+            var _iteratorNormalCompletion7 = true;
+            var _didIteratorError7 = false;
+            var _iteratorError7 = undefined;
+
+            try {
+                for (var _iterator7 = PLUGIN_ORDER[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+                    var plugin = _step7.value;
+
+                    if (this.plugins[plugin]) {
+                        this.pluginsList.push(this.plugins[plugin]);
+                    }
+                }
+            } catch (err) {
+                _didIteratorError7 = true;
+                _iteratorError7 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion7 && _iterator7.return) {
+                        _iterator7.return();
+                    }
+                } finally {
+                    if (_didIteratorError7) {
+                        throw _iteratorError7;
+                    }
+                }
+            }
+        }
+
+        /**
+         * enable one-finger touch to drag
+         * @param {object} [options]
+         * @param {string} [options.direction=all] direction to drag (all, x, or y)
+         * @param {boolean} [options.wheel=true] use wheel to scroll in y direction (unless wheel plugin is active)
+         * @param {number} [options.wheelScroll=10] number of pixels to scroll with each wheel spin
+         * @param {boolean} [options.reverse] reverse the direction of the wheel scroll
+         * @param {string} [options.underflow=center] (top/bottom/center and left/right/center, or center) where to place world if too small for screen
+         */
+
+    }, {
+        key: 'drag',
+        value: function drag(options) {
+            this.plugins['drag'] = new Drag(this, options);
+            this.pluginsSort();
+            return this;
+        }
+
+        /**
+         * clamp to world boundaries or other provided boundaries
+         * NOTES:
+         *   clamp is disabled if called with no options; use { direction: 'all' } for all edge clamping
+         *   screenWidth, screenHeight, worldWidth, and worldHeight needs to be set for this to work properly
+         * @param {object} [options]
+         * @param {(number|boolean)} [options.left] clamp left; true=0
+         * @param {(number|boolean)} [options.right] clamp right; true=viewport.worldWidth
+         * @param {(number|boolean)} [options.top] clamp top; true=0
+         * @param {(number|boolean)} [options.bottom] clamp bottom; true=viewport.worldHeight
+         * @param {string} [options.direction] (all, x, or y) using clamps of [0, viewport.worldWidth/viewport.worldHeight]; replaces left/right/top/bottom if set
+         * @param {string} [options.underflow=center] (top/bottom/center and left/right/center, or center) where to place world if too small for screen
+         * @return {Viewport} this
+         */
+
+    }, {
+        key: 'clamp',
+        value: function clamp(options) {
+            this.plugins['clamp'] = new Clamp(this, options);
+            this.pluginsSort();
+            return this;
+        }
+
+        /**
+         * decelerate after a move
+         * @param {object} [options]
+         * @param {number} [options.friction=0.95] percent to decelerate after movement
+         * @param {number} [options.bounce=0.8] percent to decelerate when past boundaries (only applicable when viewport.bounce() is active)
+         * @param {number} [options.minSpeed=0.01] minimum velocity before stopping/reversing acceleration
+         * @return {Viewport} this
+         */
+
+    }, {
+        key: 'decelerate',
+        value: function decelerate(options) {
+            this.plugins['decelerate'] = new Decelerate(this, options);
+            this.pluginsSort();
+            return this;
+        }
+
+        /**
+         * bounce on borders
+         * NOTE: screenWidth, screenHeight, worldWidth, and worldHeight needs to be set for this to work properly
+         * @param {object} [options]
+         * @param {string} [options.sides=all] all, horizontal, vertical, or combination of top, bottom, right, left (e.g., 'top-bottom-right')
+         * @param {number} [options.friction=0.5] friction to apply to decelerate if active
+         * @param {number} [options.time=150] time in ms to finish bounce
+         * @param {string|function} [options.ease=easeInOutSine] ease function or name (see http://easings.net/ for supported names)
+         * @param {string} [options.underflow=center] (top/bottom/center and left/right/center, or center) where to place world if too small for screen
+         * @return {Viewport} this
+         */
+
+    }, {
+        key: 'bounce',
+        value: function bounce(options) {
+            this.plugins['bounce'] = new Bounce(this, options);
+            this.pluginsSort();
+            return this;
+        }
+
+        /**
+         * enable pinch to zoom and two-finger touch to drag
+         * NOTE: screenWidth, screenHeight, worldWidth, and worldHeight needs to be set for this to work properly
+         * @param {number} [options.percent=1.0] percent to modify pinch speed
+         * @param {boolean} [options.noDrag] disable two-finger dragging
+         * @param {PIXI.Point} [options.center] place this point at center during zoom instead of center of two fingers
+         * @return {Viewport} this
+         */
+
+    }, {
+        key: 'pinch',
+        value: function pinch(options) {
+            this.plugins['pinch'] = new Pinch(this, options);
+            this.pluginsSort();
+            return this;
+        }
+
+        /**
+         * snap to a point
+         * @param {number} x
+         * @param {number} y
+         * @param {object} [options]
+         * @param {boolean} [options.topLeft] snap to the top-left of viewport instead of center
+         * @param {number} [options.friction=0.8] friction/frame to apply if decelerate is active
+         * @param {number} [options.time=1000]
+         * @param {string|function} [options.ease=easeInOutSine] ease function or name (see http://easings.net/ for supported names)
+         * @param {boolean} [options.interrupt=true] pause snapping with any user input on the viewport
+         * @param {boolean} [options.removeOnComplete] removes this plugin after snapping is complete
+         * @param {boolean} [options.removeOnInterrupt] removes this plugin if interrupted by any user input
+         * @param {boolean} [options.forceStart] starts the snap immediately regardless of whether the viewport is at the desired location
+        * @return {Viewport} this
+         */
+
+    }, {
+        key: 'snap',
+        value: function snap(x, y, options) {
+            this.plugins['snap'] = new Snap(this, x, y, options);
+            this.pluginsSort();
+            return this;
+        }
+
+        /**
+         * follow a target
+         * @param {PIXI.DisplayObject} target to follow (object must include {x: x-coordinate, y: y-coordinate})
+         * @param {object} [options]
+         * @param {number} [options.speed=0] to follow in pixels/frame (0=teleport to location)
+         * @param {number} [options.radius] radius (in world coordinates) of center circle where movement is allowed without moving the viewport
+         * @return {Viewport} this
+         */
+
+    }, {
+        key: 'follow',
+        value: function follow(target, options) {
+            this.plugins['follow'] = new Follow(this, target, options);
+            this.pluginsSort();
+            return this;
+        }
+
+        /**
+         * zoom using mouse wheel
+         * @param {object} [options]
+         * @param {number} [options.percent=0.1] percent to scroll with each spin
+         * @param {boolean} [options.reverse] reverse the direction of the scroll
+         * @param {PIXI.Point} [options.center] place this point at center during zoom instead of current mouse position
+         * @return {Viewport} this
+         */
+
+    }, {
+        key: 'wheel',
+        value: function wheel(options) {
+            this.plugins['wheel'] = new Wheel(this, options);
+            this.pluginsSort();
+            return this;
+        }
+
+        /**
+         * enable clamping of zoom to constraints
+         * NOTE: screenWidth, screenHeight, worldWidth, and worldHeight needs to be set for this to work properly
+         * @param {object} [options]
+         * @param {number} [options.minWidth] minimum width
+         * @param {number} [options.minHeight] minimum height
+         * @param {number} [options.maxWidth] maximum width
+         * @param {number} [options.maxHeight] maximum height
+         * @return {Viewport} this
+         */
+
+    }, {
+        key: 'clampZoom',
+        value: function clampZoom(options) {
+            this.plugins['clamp-zoom'] = new ClampZoom(this, options);
+            this.pluginsSort();
+            return this;
+        }
+
+        /**
+         * Scroll viewport when mouse hovers near one of the edges or radius-distance from center of screen.
+         * @param {object} [options]
+         * @param {number} [options.radius] distance from center of screen in screen pixels
+         * @param {number} [options.distance] distance from all sides in screen pixels
+         * @param {number} [options.top] alternatively, set top distance (leave unset for no top scroll)
+         * @param {number} [options.bottom] alternatively, set bottom distance (leave unset for no top scroll)
+         * @param {number} [options.left] alternatively, set left distance (leave unset for no top scroll)
+         * @param {number} [options.right] alternatively, set right distance (leave unset for no top scroll)
+         * @param {number} [options.speed=8] speed in pixels/frame to scroll viewport
+         * @param {boolean} [options.reverse] reverse direction of scroll
+         * @param {boolean} [options.noDecelerate] don't use decelerate plugin even if it's installed
+         * @param {boolean} [options.linear] if using radius, use linear movement (+/- 1, +/- 1) instead of angled movement (Math.cos(angle from center), Math.sin(angle from center))
+         */
+
+    }, {
+        key: 'mouseEdges',
+        value: function mouseEdges(options) {
+            this.plugins['mouse-edges'] = new MouseEdges(this, options);
+            this.pluginsSort();
+            return this;
+        }
+
+        /**
+         * pause viewport (including animation updates such as decelerate)
+         * NOTE: when setting pause=true, all touches and mouse actions are cleared (i.e., if mousedown was active, it becomes inactive for purposes of the viewport)
+         * @type {boolean}
+         */
+
+    }, {
+        key: 'screenWidth',
+        get: function get() {
+            return this._screenWidth;
+        },
+        set: function set(value) {
+            this._screenWidth = value;
+        }
+
+        /**
+         * screen height in screen pixels
+         * @type {number}
+         */
+
+    }, {
+        key: 'screenHeight',
+        get: function get() {
+            return this._screenHeight;
+        },
+        set: function set(value) {
+            this._screenHeight = value;
+        }
+
+        /**
+         * world width in pixels
+         * @type {number}
+         */
+
+    }, {
+        key: 'worldWidth',
+        get: function get() {
+            if (this._worldWidth) {
+                return this._worldWidth;
+            } else {
+                return this.width;
+            }
+        },
+        set: function set(value) {
+            this._worldWidth = value;
+            this.resizePlugins();
+        }
+
+        /**
+         * world height in pixels
+         * @type {number}
+         */
+
+    }, {
+        key: 'worldHeight',
+        get: function get() {
+            if (this._worldHeight) {
+                return this._worldHeight;
+            } else {
+                return this.height;
+            }
+        },
+        set: function set(value) {
+            this._worldHeight = value;
+            this.resizePlugins();
+        }
+    }, {
+        key: 'worldScreenWidth',
+        get: function get() {
+            return this._screenWidth / this.scale.x;
+        }
+
+        /**
+         * screen height in world coordinates
+         * @type {number}
+         * @readonly
+         */
+
+    }, {
+        key: 'worldScreenHeight',
+        get: function get() {
+            return this._screenHeight / this.scale.y;
+        }
+
+        /**
+         * world width in screen coordinates
+         * @type {number}
+         * @readonly
+         */
+
+    }, {
+        key: 'screenWorldWidth',
+        get: function get() {
+            return this._worldWidth * this.scale.x;
+        }
+
+        /**
+         * world height in screen coordinates
+         * @type {number}
+         * @readonly
+         */
+
+    }, {
+        key: 'screenWorldHeight',
+        get: function get() {
+            return this._worldHeight * this.scale.y;
+        }
+
+        /**
+         * get center of screen in world coordinates
+         * @type {PIXI.PointLike}
+         */
+
+    }, {
+        key: 'center',
+        get: function get() {
+            return { x: this.worldScreenWidth / 2 - this.x / this.scale.x, y: this.worldScreenHeight / 2 - this.y / this.scale.y };
+        },
+        set: function set(value) {
+            this.moveCenter(value);
+        }
+    }, {
+        key: 'corner',
+        get: function get() {
+            return { x: -this.x / this.scale.x, y: -this.y / this.scale.y };
+        },
+        set: function set(value) {
+            this.moveCorner(value);
+        }
+    }, {
+        key: 'right',
+        get: function get() {
+            return -this.x / this.scale.x + this.worldScreenWidth;
+        },
+        set: function set(value) {
+            this.x = -value * this.scale.x + this.screenWidth;
+            this._reset();
+        }
+
+        /**
+         * world coordinates of the left edge of the screen
+         * @type {number}
+         */
+
+    }, {
+        key: 'left',
+        get: function get() {
+            return -this.x / this.scale.x;
+        },
+        set: function set(value) {
+            this.x = -value * this.scale.x;
+            this._reset();
+        }
+
+        /**
+         * world coordinates of the top edge of the screen
+         * @type {number}
+         */
+
+    }, {
+        key: 'top',
+        get: function get() {
+            return -this.y / this.scale.y;
+        },
+        set: function set(value) {
+            this.y = -value * this.scale.y;
+            this._reset();
+        }
+
+        /**
+         * world coordinates of the bottom edge of the screen
+         * @type {number}
+         */
+
+    }, {
+        key: 'bottom',
+        get: function get() {
+            return -this.y / this.scale.y + this.worldScreenHeight;
+        },
+        set: function set(value) {
+            this.y = -value * this.scale.y + this.screenHeight;
+            this._reset();
+        }
+        /**
+         * determines whether the viewport is dirty (i.e., needs to be renderered to the screen because of a change)
+         * @type {boolean}
+         */
+
+    }, {
+        key: 'dirty',
+        get: function get() {
+            return this._dirty;
+        },
+        set: function set(value) {
+            this._dirty = value;
+        }
+
+        /**
+         * permanently changes the Viewport's hitArea
+         * <p>NOTE: normally the hitArea = PIXI.Rectangle(Viewport.left, Viewport.top, Viewport.worldScreenWidth, Viewport.worldScreenHeight)</p>
+         * @type {(PIXI.Rectangle|PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.RoundedRectangle)}
+         */
+
+    }, {
+        key: 'forceHitArea',
+        get: function get() {
+            return this._forceHitArea;
+        },
+        set: function set(value) {
+            if (value) {
+                this._forceHitArea = value;
+                this.hitArea = value;
+            } else {
+                this._forceHitArea = false;
+                this.hitArea = new PIXI.Rectangle(0, 0, this.worldWidth, this.worldHeight);
+            }
+        }
+    }, {
+        key: 'pause',
+        get: function get() {
+            return this._pause;
+        },
+        set: function set(value) {
+            this._pause = value;
+            if (value) {
+                this.touches = [];
+                this.leftDown = false;
+            }
+        }
+    }]);
+
+    return Viewport;
+}(PIXI.Container);
+
+/**
+ * fires after a mouse or touch click
+ * @event Viewport#clicked
+ * @type {object}
+ * @property {PIXI.PointLike} screen
+ * @property {PIXI.PointLike} world
+ * @property {Viewport} viewport
+ */
+
+/**
+ * fires when a drag starts
+ * @event Viewport#drag-start
+ * @type {object}
+ * @property {PIXI.PointLike} screen
+ * @property {PIXI.PointLike} world
+ * @property {Viewport} viewport
+ */
+
+/**
+ * fires when a drag ends
+ * @event Viewport#drag-end
+ * @type {object}
+ * @property {PIXI.PointLike} screen
+ * @property {PIXI.PointLike} world
+ * @property {Viewport} viewport
+ */
+
+/**
+ * fires when a pinch starts
+ * @event Viewport#pinch-start
+ * @type {Viewport}
+ */
+
+/**
+ * fires when a pinch end
+ * @event Viewport#pinch-end
+ * @type {Viewport}
+ */
+
+/**
+ * fires when a snap starts
+ * @event Viewport#snap-start
+ * @type {Viewport}
+ */
+
+/**
+ * fires when a snap ends
+ * @event Viewport#snap-end
+ * @type {Viewport}
+ */
+
+/**
+ * fires when a snap-zoom starts
+ * @event Viewport#snap-zoom-start
+ * @type {Viewport}
+ */
+
+/**
+ * fires when a snap-zoom ends
+ * @event Viewport#snap-zoom-end
+ * @type {Viewport}
+ */
+
+/**
+ * fires when a bounce starts in the x direction
+ * @event Viewport#bounce-x-start
+ * @type {Viewport}
+ */
+
+/**
+ * fires when a bounce ends in the x direction
+ * @event Viewport#bounce-x-end
+ * @type {Viewport}
+ */
+
+/**
+ * fires when a bounce starts in the y direction
+ * @event Viewport#bounce-y-start
+ * @type {Viewport}
+ */
+
+/**
+ * fires when a bounce ends in the y direction
+ * @event Viewport#bounce-y-end
+ * @type {Viewport}
+ */
+
+/**
+ * fires when for a mouse wheel event
+ * @event Viewport#wheel
+ * @type {object}
+ * @property {object} wheel
+ * @property {number} wheel.dx
+ * @property {number} wheel.dy
+ * @property {number} wheel.dz
+ * @property {Viewport} viewport
+ */
+
+/**
+ * fires when a wheel-scroll occurs
+ * @event Viewport#wheel-scroll
+ * @type {Viewport}
+ */
+
+/**
+ * fires when a mouse-edge starts to scroll
+ * @event Viewport#mouse-edge-start
+ * @type {Viewport}
+ */
+
+/**
+ * fires when the mouse-edge scrolling ends
+ * @event Viewport#mouse-edge-end
+ * @type {Viewport}
+ */
+
+/**
+ * fires when viewport moves through UI interaction, deceleration, or follow
+ * @event Viewport#moved
+ * @type {object}
+ * @property {Viewport} viewport
+ * @property {string} type (drag, snap, pinch, follow, bounce-x, bounce-y, clamp-x, clamp-y, decelerate, mouse-edges, wheel)
+ */
+
+/**
+ * fires when viewport moves through UI interaction, deceleration, or follow
+ * @event Viewport#zoomed
+ * @type {object}
+ * @property {Viewport} viewport
+ * @property {string} type (drag-zoom, pinch, wheel, clamp-zoom)
+ */
+
+PIXI.extras.Viewport = Viewport;
+
+module.exports = Viewport;
+
+},{"./bounce":1,"./clamp":3,"./clamp-zoom":2,"./decelerate":4,"./drag":5,"./follow":6,"./mouse-edges":7,"./pinch":8,"./snap":11,"./snap-zoom":10,"./utils":12,"./wheel":14}],14:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Plugin = require('./plugin');
+
+module.exports = function (_Plugin) {
+    _inherits(Wheel, _Plugin);
+
+    /**
+     * @private
+     * @param {Viewport} parent
+     * @param {object} [options]
+     * @param {number} [options.percent=0.1] percent to scroll with each spin
+     * @param {boolean} [options.reverse] reverse the direction of the scroll
+     * @param {PIXI.Point} [options.center] place this point at center during zoom instead of current mouse position
+     *
+     * @event wheel({wheel: {dx, dy, dz}, event, viewport})
+     */
+    function Wheel(parent, options) {
+        _classCallCheck(this, Wheel);
+
+        var _this = _possibleConstructorReturn(this, (Wheel.__proto__ || Object.getPrototypeOf(Wheel)).call(this, parent));
+
+        options = options || {};
+        _this.percent = options.percent || 0.1;
+        _this.center = options.center;
+        _this.reverse = options.reverse;
+        return _this;
+    }
+
+    _createClass(Wheel, [{
+        key: 'wheel',
+        value: function wheel(e) {
+            if (this.paused) {
+                return;
+            }
+
+            var change = void 0;
+            if (this.reverse) {
+                change = e.deltaY > 0 ? 1 + this.percent : 1 - this.percent;
+            } else {
+                change = e.deltaY > 0 ? 1 - this.percent : 1 + this.percent;
+            }
+            var point = this.parent.getPointerPosition(e);
+
+            var oldPoint = void 0;
+            if (!this.center) {
+                oldPoint = this.parent.toLocal(point);
+            }
+            this.parent.scale.x *= change;
+            this.parent.scale.y *= change;
+            this.parent.emit('zoomed', { viewport: this.parent, type: 'wheel' });
+            var clamp = this.parent.plugins['clamp-zoom'];
+            if (clamp) {
+                clamp.clamp();
+            }
+
+            if (this.center) {
+                this.parent.moveCenter(this.center);
+            } else {
+                var newPoint = this.parent.toGlobal(oldPoint);
+                this.parent.x += point.x - newPoint.x;
+                this.parent.y += point.y - newPoint.y;
+            }
+            this.parent.emit('moved', { viewport: this.parent, type: 'wheel' });
+            this.parent.emit('wheel', { wheel: { dx: e.deltaX, dy: e.deltaY, dz: e.deltaZ }, event: e, viewport: this.parent });
+            e.preventDefault();
+        }
+    }]);
+
+    return Wheel;
+}(Plugin);
+
+},{"./plugin":9}],15:[function(require,module,exports){
+
+/*
+	Copyright © 2001 Robert Penner
+	All rights reserved.
+
+	Redistribution and use in source and binary forms, with or without modification, 
+	are permitted provided that the following conditions are met:
+
+	Redistributions of source code must retain the above copyright notice, this list of 
+	conditions and the following disclaimer.
+	Redistributions in binary form must reproduce the above copyright notice, this list 
+	of conditions and the following disclaimer in the documentation and/or other materials 
+	provided with the distribution.
+
+	Neither the name of the author nor the names of contributors may be used to endorse 
+	or promote products derived from this software without specific prior written permission.
+
+	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY 
+	EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+	MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+	COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+	EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+	GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED 
+	AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+	NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+	OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+(function() {
+  var penner, umd;
+
+  umd = function(factory) {
+    if (typeof exports === 'object') {
+      return module.exports = factory;
+    } else if (typeof define === 'function' && define.amd) {
+      return define([], factory);
+    } else {
+      return this.penner = factory;
+    }
+  };
+
+  penner = {
+    linear: function(t, b, c, d) {
+      return c * t / d + b;
+    },
+    easeInQuad: function(t, b, c, d) {
+      return c * (t /= d) * t + b;
+    },
+    easeOutQuad: function(t, b, c, d) {
+      return -c * (t /= d) * (t - 2) + b;
+    },
+    easeInOutQuad: function(t, b, c, d) {
+      if ((t /= d / 2) < 1) {
+        return c / 2 * t * t + b;
+      } else {
+        return -c / 2 * ((--t) * (t - 2) - 1) + b;
+      }
+    },
+    easeInCubic: function(t, b, c, d) {
+      return c * (t /= d) * t * t + b;
+    },
+    easeOutCubic: function(t, b, c, d) {
+      return c * ((t = t / d - 1) * t * t + 1) + b;
+    },
+    easeInOutCubic: function(t, b, c, d) {
+      if ((t /= d / 2) < 1) {
+        return c / 2 * t * t * t + b;
+      } else {
+        return c / 2 * ((t -= 2) * t * t + 2) + b;
+      }
+    },
+    easeInQuart: function(t, b, c, d) {
+      return c * (t /= d) * t * t * t + b;
+    },
+    easeOutQuart: function(t, b, c, d) {
+      return -c * ((t = t / d - 1) * t * t * t - 1) + b;
+    },
+    easeInOutQuart: function(t, b, c, d) {
+      if ((t /= d / 2) < 1) {
+        return c / 2 * t * t * t * t + b;
+      } else {
+        return -c / 2 * ((t -= 2) * t * t * t - 2) + b;
+      }
+    },
+    easeInQuint: function(t, b, c, d) {
+      return c * (t /= d) * t * t * t * t + b;
+    },
+    easeOutQuint: function(t, b, c, d) {
+      return c * ((t = t / d - 1) * t * t * t * t + 1) + b;
+    },
+    easeInOutQuint: function(t, b, c, d) {
+      if ((t /= d / 2) < 1) {
+        return c / 2 * t * t * t * t * t + b;
+      } else {
+        return c / 2 * ((t -= 2) * t * t * t * t + 2) + b;
+      }
+    },
+    easeInSine: function(t, b, c, d) {
+      return -c * Math.cos(t / d * (Math.PI / 2)) + c + b;
+    },
+    easeOutSine: function(t, b, c, d) {
+      return c * Math.sin(t / d * (Math.PI / 2)) + b;
+    },
+    easeInOutSine: function(t, b, c, d) {
+      return -c / 2 * (Math.cos(Math.PI * t / d) - 1) + b;
+    },
+    easeInExpo: function(t, b, c, d) {
+      if (t === 0) {
+        return b;
+      } else {
+        return c * Math.pow(2, 10 * (t / d - 1)) + b;
+      }
+    },
+    easeOutExpo: function(t, b, c, d) {
+      if (t === d) {
+        return b + c;
+      } else {
+        return c * (-Math.pow(2, -10 * t / d) + 1) + b;
+      }
+    },
+    easeInOutExpo: function(t, b, c, d) {
+      if (t === 0) {
+        b;
+      }
+      if (t === d) {
+        b + c;
+      }
+      if ((t /= d / 2) < 1) {
+        return c / 2 * Math.pow(2, 10 * (t - 1)) + b;
+      } else {
+        return c / 2 * (-Math.pow(2, -10 * --t) + 2) + b;
+      }
+    },
+    easeInCirc: function(t, b, c, d) {
+      return -c * (Math.sqrt(1 - (t /= d) * t) - 1) + b;
+    },
+    easeOutCirc: function(t, b, c, d) {
+      return c * Math.sqrt(1 - (t = t / d - 1) * t) + b;
+    },
+    easeInOutCirc: function(t, b, c, d) {
+      if ((t /= d / 2) < 1) {
+        return -c / 2 * (Math.sqrt(1 - t * t) - 1) + b;
+      } else {
+        return c / 2 * (Math.sqrt(1 - (t -= 2) * t) + 1) + b;
+      }
+    },
+    easeInElastic: function(t, b, c, d) {
+      var a, p, s;
+      s = 1.70158;
+      p = 0;
+      a = c;
+      if (t === 0) {
+        b;
+      } else if ((t /= d) === 1) {
+        b + c;
+      }
+      if (!p) {
+        p = d * .3;
+      }
+      if (a < Math.abs(c)) {
+        a = c;
+        s = p / 4;
+      } else {
+        s = p / (2 * Math.PI) * Math.asin(c / a);
+      }
+      return -(a * Math.pow(2, 10 * (t -= 1)) * Math.sin((t * d - s) * (2 * Math.PI) / p)) + b;
+    },
+    easeOutElastic: function(t, b, c, d) {
+      var a, p, s;
+      s = 1.70158;
+      p = 0;
+      a = c;
+      if (t === 0) {
+        b;
+      } else if ((t /= d) === 1) {
+        b + c;
+      }
+      if (!p) {
+        p = d * .3;
+      }
+      if (a < Math.abs(c)) {
+        a = c;
+        s = p / 4;
+      } else {
+        s = p / (2 * Math.PI) * Math.asin(c / a);
+      }
+      return a * Math.pow(2, -10 * t) * Math.sin((t * d - s) * (2 * Math.PI) / p) + c + b;
+    },
+    easeInOutElastic: function(t, b, c, d) {
+      var a, p, s;
+      s = 1.70158;
+      p = 0;
+      a = c;
+      if (t === 0) {
+        b;
+      } else if ((t /= d / 2) === 2) {
+        b + c;
+      }
+      if (!p) {
+        p = d * (.3 * 1.5);
+      }
+      if (a < Math.abs(c)) {
+        a = c;
+        s = p / 4;
+      } else {
+        s = p / (2 * Math.PI) * Math.asin(c / a);
+      }
+      if (t < 1) {
+        return -.5 * (a * Math.pow(2, 10 * (t -= 1)) * Math.sin((t * d - s) * (2 * Math.PI) / p)) + b;
+      } else {
+        return a * Math.pow(2, -10 * (t -= 1)) * Math.sin((t * d - s) * (2 * Math.PI) / p) * .5 + c + b;
+      }
+    },
+    easeInBack: function(t, b, c, d, s) {
+      if (s === void 0) {
+        s = 1.70158;
+      }
+      return c * (t /= d) * t * ((s + 1) * t - s) + b;
+    },
+    easeOutBack: function(t, b, c, d, s) {
+      if (s === void 0) {
+        s = 1.70158;
+      }
+      return c * ((t = t / d - 1) * t * ((s + 1) * t + s) + 1) + b;
+    },
+    easeInOutBack: function(t, b, c, d, s) {
+      if (s === void 0) {
+        s = 1.70158;
+      }
+      if ((t /= d / 2) < 1) {
+        return c / 2 * (t * t * (((s *= 1.525) + 1) * t - s)) + b;
+      } else {
+        return c / 2 * ((t -= 2) * t * (((s *= 1.525) + 1) * t + s) + 2) + b;
+      }
+    },
+    easeInBounce: function(t, b, c, d) {
+      var v;
+      v = penner.easeOutBounce(d - t, 0, c, d);
+      return c - v + b;
+    },
+    easeOutBounce: function(t, b, c, d) {
+      if ((t /= d) < 1 / 2.75) {
+        return c * (7.5625 * t * t) + b;
+      } else if (t < 2 / 2.75) {
+        return c * (7.5625 * (t -= 1.5 / 2.75) * t + .75) + b;
+      } else if (t < 2.5 / 2.75) {
+        return c * (7.5625 * (t -= 2.25 / 2.75) * t + .9375) + b;
+      } else {
+        return c * (7.5625 * (t -= 2.625 / 2.75) * t + .984375) + b;
+      }
+    },
+    easeInOutBounce: function(t, b, c, d) {
+      var v;
+      if (t < d / 2) {
+        v = penner.easeInBounce(t * 2, 0, c, d);
+        return v * .5 + b;
+      } else {
+        v = penner.easeOutBounce(t * 2 - d, 0, c, d);
+        return v * .5 + c * .5 + b;
+      }
+    }
+  };
+
+  umd(penner);
+
+}).call(this);
+
+},{}]},{},[13]);
+
 /*
  SAT.js - Version 0.7.1 - Copyright 2012 - 2018 - Jim Riecken <jimr@jimr.ca> - released under the MIT License. https://github.com/jriecken/sat-js */
 function x(){function c(a,d){this.x=a||0;this.y=d||0}function B(a,d){this.pos=a||new c;this.r=d||0}function m(a,d){this.pos=a||new c;this.angle=0;this.offset=new c;this.u(d||[])}function p(a,d,b){this.pos=a||new c;this.w=d||0;this.h=b||0}function w(){this.b=this.a=null;this.overlapN=new c;this.overlapV=new c;this.clear()}function C(a,d,b){for(var g=Number.MAX_VALUE,c=-Number.MAX_VALUE,l=a.length,v=0;v<l;v++){var e=a[v].f(d);e<g&&(g=e);e>c&&(c=e)}b[0]=g;b[1]=c}function y(a,d,b,g,c,l){var k=q.pop(),

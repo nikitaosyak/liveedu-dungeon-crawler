@@ -62,16 +62,15 @@ export const LevelMap = renderer => {
         'tile_13': new SAT.Box(new SAT.Vector(-1, -1), 33, 21).toPolygon()
     }
 
-    let colliderRect = new PIXI.Rectangle()
+    let colliderRect = new PIXI.Rectangle(0, 0, 64, 64)
     let response = new SAT.Response()
     return {
         collide: player => {
             const triggerResult = []
             tiles.forEach(t => {
-                if (t.visual
-                    .getBounds(false, colliderRect)
-                    .contains(player.visual.x, player.visual.y)) {
-                    // console.log(t.visual.name)
+                colliderRect.x = t.visual.x
+                colliderRect.y = t.visual.y
+                if (colliderRect.contains(player.visual.x, player.visual.y)) {
                     if (t.visual.name in allowedAreas) {
                         const area = allowedAreas[t.visual.name]
                         const left = colliderRect.left + area.x
